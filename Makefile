@@ -10,6 +10,5 @@ all:
 			--flake .#$(CONFIG_NAME) \
 			--use-remote-sudo \
 			--target-host nixie@$(HOST_IP) \
-			--build-host nixie@$(HOST_IP) \
-			--show-trace
+			--build-host nixie@$(HOST_IP)
 

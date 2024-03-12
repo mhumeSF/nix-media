@@ -1,10 +1,41 @@
-{ modulesPath, config, disko, lib, pkgs, ... }: let
+{
+  self,
+  pkgs,
+  microvm,
+  ...
+}:
+
+let
   unstable = import <nixpkgs-unstable> {};
 in {
   imports = [
     ./hardware-configuration.nix
     ./disk-config.nix
   ];
+
+  microvm.vms = {
+    my-microvm = {
+      # The package set to use for the microvm. This also determines the microvm's architecture.
+      # Defaults to the host system's package set if not given.
+      pkgs = import pkgs { system = "x86_64-linux"; };
+
+      # The configuration for the MicroVM.
+      # Multiple definitions will be merged as expected.
+      config = {
+        # It is highly recommended to share the host's nix-store
+        # with the VMs to prevent building huge images.
+        microvm.shares = [{
+          source = "/nix/store";
+          mountPoint = "/nix/.ro-store";
+          tag = "ro-store";
+          proto = "virtiofs";
+        }];
+      };
+
+    };
+  };
+
+  # microvm.vms.my-microvm = { flake = self; };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.trusted-users = [ "nixie" "root" ];
@@ -55,6 +86,7 @@ in {
     wait-online.ignoredInterfaces = [ "wifi"];
   };
 
+
   systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
 
   time.timeZone = "America/New_York";
@@ -63,13 +95,14 @@ in {
     htop
     ripgrep
     starship
-    vim
+    neovim
     git
+    tree
   ];
 
-  security.sudo.wheelNeedsPassword = false;
+  environment.variables.EDITOR = "nvim";
 
-  environment.variables.EDITOR = "vim";
+  security.sudo.wheelNeedsPassword = false;
 
   users.users = {
     nixie = {
@@ -80,8 +113,6 @@ in {
       openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFLpijNKLQTJJXToZRGjRWb2f1EgPG9IzzO85mvbjbaY nixie@router" ];
     };
   };
-
-  programs.zsh.enable = true;
 
   services = {
     openssh.enable = true;
