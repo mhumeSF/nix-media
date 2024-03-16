@@ -1,7 +1,6 @@
 {
   self,
   pkgs,
-  microvm,
   ...
 }:
 
@@ -12,10 +11,6 @@ in {
     ./hardware-configuration.nix
     ./disk-config.nix
   ];
-
-
-  # microvm.host.enable = true;
-  # microvm.vms.my-microvm = { flake = self; };
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.trusted-users = [ "nixie" "root" ];
@@ -69,6 +64,7 @@ in {
   systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
   time.timeZone = "America/New_York";
 
+  environment.variables.EDITOR = "nvim";
   environment.systemPackages = with pkgs; [
     htop
     ripgrep
@@ -78,7 +74,6 @@ in {
     tree
   ];
 
-  environment.variables.EDITOR = "nvim";
   security.sudo.wheelNeedsPassword = false;
 
   users.users = {
@@ -92,6 +87,7 @@ in {
   };
 
   services.openssh.enable = true;
+
   system.stateVersion = "23.05";
 
 }

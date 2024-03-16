@@ -15,4 +15,3 @@ all:
 			--target-host nixie@$(HOST_IP) \
 			--build-host nixie@$(HOST_IP) \
 			--show-trace --verbose
-
