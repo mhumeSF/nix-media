@@ -1,26 +1,35 @@
 {
   pkgs,
+  config,
   agenix,
   ...
 }: {
   imports = [
     ../common/avahi.nix
     ../common/nixie.nix
+    agenix.nixosModules.default
   ];
 
-  age.secrets."secret1".file = ../secrets/secret1.age;
 
   microvm = {
 
     vcpu = 8;
     mem = 16000;
 
-    shares = [{
-      source     = "/nix/store";
-      mountPoint = "/nix/.ro-store";
-      tag        = "ro-store";
-      proto      = "virtiofs";
-    }];
+    shares = [
+      {
+        source     = "/nix/store";
+        mountPoint = "/nix/.ro-store";
+        tag        = "ro-store";
+        proto      = "virtiofs";
+      }
+      {
+        source     = "/var/lib/microvms/${config.networking.hostName}/storage/etc/ssh";
+        mountPoint = "/etc/ssh";
+        tag        = "ssh";
+        proto      = "virtiofs";
+      }
+    ];
 
     interfaces = [{
       type         = "macvtap";
@@ -29,6 +38,10 @@
       macvtap.link = "bridge";
       macvtap.mode = "bridge";
     }];
+  };
+
+  fileSystems = {
+    "/etc/ssh".neededForBoot = true;
   };
 
   time.timeZone = "America/New_York";
@@ -65,10 +78,10 @@
     "--kube-apiserver-arg=\"token-auth-file=/etc/rancher/k3s/token-auth-file.csv\""
   ];
 
-  # example for now
-  environment.etc."rancher/k3s/token-auth-file.csv".text = ''
-    7f255a63d2f74a529382f1533d3d6fd132,admin,1,"system:masters"
-  '';
+  age.secrets."tokenFile" = {
+    file = ../secrets/tokenFile.age;
+    path = "/etc/rancher/k3s/token-auth-file.csv";
+  };
 
   environment.variables.EDITOR = "nvim";
   environment.systemPackages = with pkgs; [

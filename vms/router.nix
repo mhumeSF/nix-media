@@ -1,10 +1,13 @@
 {
   pkgs,
+  config,
+  agenix,
   ...
 }: {
   imports = [
     ../common/avahi.nix
     ../common/nixie.nix
+    agenix.nixosModules.default
   ];
 
   microvm = {
@@ -12,12 +15,20 @@
     vcpu = 2;
     mem = 2000;
 
-    shares = [{
-      source     = "/nix/store";
-      mountPoint = "/nix/.ro-store";
-      tag        = "ro-store";
-      proto      = "virtiofs";
-    }];
+    shares = [
+      {
+        source     = "/nix/store";
+        mountPoint = "/nix/.ro-store";
+        tag        = "ro-store";
+        proto      = "virtiofs";
+      }
+      {
+        source     = "/var/lib/microvms/${config.networking.hostName}/storage/etc/ssh";
+        mountPoint = "/etc/ssh";
+        tag        = "ssh";
+        proto      = "virtiofs";
+      }
+    ];
 
     interfaces = [{
       type         = "macvtap";
@@ -26,6 +37,10 @@
       macvtap.link = "bridge";
       macvtap.mode = "bridge";
     }];
+  };
+
+  fileSystems = {
+    "/etc/ssh".neededForBoot = true;
   };
 
   time.timeZone = "America/New_York";
