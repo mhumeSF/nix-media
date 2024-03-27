@@ -9,13 +9,18 @@
 
     disko.url = "github:nix-community/disko";
     disko.inputs.nixpkgs.follows = "nixpkgs";
+
+    agenix.url = "github:ryantm/agenix";
+    agenix.inputs.nixpkgs.follows = "nixpkgs";
+
   };
 
   outputs = {
     self,
     nixpkgs,
-    microvm,
+    agenix,
     disko,
+    microvm,
     ...
   }@inputs:
 
@@ -25,27 +30,26 @@
       modules = [
         disko.nixosModules.disko
         ./configuration.nix
+        agenix.nixosModules.default
 
         microvm.nixosModules.host
         {
           microvm.autostart = [
             "router"
+            "k3s"
           ];
         }
 
         {
           microvm.vms = {
             router = {
-              # The package set to use for the microvm. This also determines the microvm's architecture.
-              # Defaults to the host system's package set if not given.
-              pkgs = import nixpkgs {system = "x86_64-linux";};
-
-              # (Optional) A set of special arguments to be passed to the MicroVM's NixOS modules.
-              #specialArgs = {};
-
-              # The configuration for the MicroVM.
-              # Multiple definitions will be merged as expected.
+              pkgs = import nixpkgs { system = "x86_64-linux"; };
               config = import ./vms/router.nix;
+            };
+
+            k3s = {
+              pkgs = import nixpkgs { system = "x86_64-linux"; };
+              config = import ./vms/k3s.nix;
             };
           };
         }

@@ -1,10 +1,16 @@
 {
-  config,
-  lib,
   pkgs,
   ...
 }: {
+  imports = [
+    ../common/avahi.nix
+    ../common/nixie.nix
+  ];
+
   microvm = {
+
+    vcpu = 2;
+    mem = 2000;
 
     shares = [{
       source     = "/nix/store";
@@ -14,9 +20,9 @@
     }];
 
     interfaces = [{
-      type = "macvtap";
-      id = "vm-test1";
-      mac = "02:00:00:00:00:01";
+      type         = "macvtap";
+      id           = "vm-router";
+      mac          = "02:00:00:00:00:01";
       macvtap.link = "bridge";
       macvtap.mode = "bridge";
     }];
@@ -25,11 +31,11 @@
   time.timeZone = "America/New_York";
 
   networking = {
-    hostName = "router";
+    hostName         = "router";
     firewall.package = pkgs.nftables;
-    enableIPv6  = false;
-    nameservers = [ "1.1.1.1" "1.0.0.1" ];
-    nftables.enable = true;
+    enableIPv6       = false;
+    nameservers      = [ "1.1.1.1" "1.0.0.1" ];
+    nftables.enable  = true;
   };
 
   systemd.network = {
@@ -48,17 +54,8 @@
     htop
     neovim
     tree
+    avahi
   ];
-
-  users.users = {
-    nixie = {
-      isNormalUser                = true;
-      home                        = "/home/nixie";
-      description                 = "Nixie Admin";
-      extraGroups                 = [ "wheel" ];
-      openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFLpijNKLQTJJXToZRGjRWb2f1EgPG9IzzO85mvbjbaY nixie@router" ];
-    };
-  };
 
   services.openssh.enable = true;
 

@@ -10,6 +10,8 @@ in {
   imports = [
     ./hardware-configuration.nix
     ./disk-config.nix
+    ./common/avahi.nix
+    ./common/nixie.nix
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
@@ -61,6 +63,10 @@ in {
     wait-online.ignoredInterfaces = [ "wifi"];
   };
 
+  virtualisation.docker.enable = true;
+  virtualisation.docker.enableOnBoot = true;
+  users.users.nixie.extraGroups = ["docker"];
+
   systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
   time.timeZone = "America/New_York";
 
@@ -73,18 +79,6 @@ in {
     git
     tree
   ];
-
-  security.sudo.wheelNeedsPassword = false;
-
-  users.users = {
-    nixie = {
-      isNormalUser                = true;
-      home                        = "/home/nixie";
-      description                 = "Nixie Admin";
-      extraGroups                 = [ "wheel" ];
-      openssh.authorizedKeys.keys = [ "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFLpijNKLQTJJXToZRGjRWb2f1EgPG9IzzO85mvbjbaY nixie@router" ];
-    };
-  };
 
   services.openssh.enable = true;
 
