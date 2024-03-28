@@ -75,6 +75,7 @@ in {
     htop
     ripgrep
     starship
+    powertop
     neovim
     git
     tree
