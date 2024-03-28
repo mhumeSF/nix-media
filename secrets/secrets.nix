@@ -1,4 +1,5 @@
 let
+  finn = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFjkND6b+zYkXSG5YlUmbD4ammjF60qv+A/3f+nslQIq mhumesf@gmail.com";
   nixie = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFLpijNKLQTJJXToZRGjRWb2f1EgPG9IzzO85mvbjbaY nixie@router";
   users = [ nixie ];
 
@@ -8,6 +9,6 @@ let
   systems = [ k3s router media ];
 in
 {
-  "tokenFile.age".publicKeys = [ k3s ];
-  "bootstrap.yaml.age".publicKeys = [ k3s ];
+  "tokenFile.age".publicKeys = [ finn k3s ];
+  "bootstrap.yaml.age".publicKeys = [ finn k3s ];
 }
