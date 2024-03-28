@@ -29,6 +29,12 @@
         tag        = "ssh";
         proto      = "virtiofs";
       }
+      {
+        source     = "/movies";
+        mountPoint = "/movies";
+        tag        = "movies";
+        proto      = "virtiofs";
+      }
     ];
 
     interfaces = [{
@@ -41,6 +47,7 @@
   };
 
   fileSystems = {
+    "/movies".neededForBoot = true;
     "/etc/ssh".neededForBoot = true;
   };
 
@@ -81,6 +88,11 @@
   age.secrets."tokenFile" = {
     file = ../secrets/tokenFile.age;
     path = "/etc/rancher/k3s/token-auth-file.csv";
+  };
+
+  age.secrets."bootstrap.yaml" = {
+    file = ../secrets/bootstrap.yaml.age;
+    path = "/var/lib/rancher/k3s/server/manifests/bootstrap.yaml";
   };
 
   environment.variables.EDITOR = "nvim";

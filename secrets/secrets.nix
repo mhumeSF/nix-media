@@ -9,4 +9,5 @@ let
 in
 {
   "tokenFile.age".publicKeys = [ k3s ];
+  "bootstrap.yaml.age".publicKeys = [ k3s ];
 }
