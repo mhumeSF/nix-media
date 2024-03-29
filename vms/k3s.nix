@@ -3,7 +3,19 @@
   config,
   agenix,
   ...
-}: {
+}: let
+
+  gotk-components = pkgs.writeTextFile {
+    name = "gotk-components";
+    text = builtins.readFile ../cluster/flux-system/gotk-components.yaml;
+  };
+
+  gotk-sync = pkgs.writeTextFile {
+    name = "gotk-sync";
+    text = builtins.readFile ../cluster/flux-system/gotk-sync.yaml;
+  };
+
+in {
   imports = [
     ../common/avahi.nix
     ../common/nixie.nix
@@ -106,4 +118,9 @@
   services.openssh.enable = true;
 
   system.stateVersion = "23.11";
+
+  systemd.tmpfiles.rules = [
+    "L+ /var/lib/rancher/k3s/server/manifests/gotk-components.yaml - - - - ${gotk-components}"
+    "L+ /var/lib/rancher/k3s/server/manifests/gotk-sync.yaml - - - - ${gotk-sync}"
+  ];
 }
