@@ -7,12 +7,12 @@
 
   gotk-components = pkgs.writeTextFile {
     name = "gotk-components";
-    text = builtins.readFile ../cluster/flux-system/gotk-components.yaml;
+    text = builtins.readFile ../cluster/bootstrap/gotk-components.yaml;
   };
 
   gotk-sync = pkgs.writeTextFile {
     name = "gotk-sync";
-    text = builtins.readFile ../cluster/flux-system/gotk-sync.yaml;
+    text = builtins.readFile ../cluster/bootstrap/gotk-sync.yaml;
   };
 
 in {
