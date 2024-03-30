@@ -15,18 +15,6 @@ spec:
     kind: HelmRelease
     name: loki
     namespace: monitoring
-  decryption:
-    provider: sops
-    secretRef:
-      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 3m
-  postBuild:
-    substituteFrom:
-    - kind: ConfigMap
-      name: cluster-settings
-      optional: false
-    - kind: Secret
-      name: cluster-secrets
-      optional: false
