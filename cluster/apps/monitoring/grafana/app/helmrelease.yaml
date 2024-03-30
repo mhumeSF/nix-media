@@ -1,0 +1,223 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: grafana
+  namespace: monitoring
+spec:
+  interval: 15m
+  chart:
+    spec:
+      # renovate: registryUrl=https://grafana.github.io/helm-charts
+      chart: grafana
+      version: 7.3.7
+      sourceRef:
+        kind: HelmRepository
+        name: grafana
+        namespace: flux-system
+  maxHistory: 3
+  values:
+    deploymentStrategy:
+      type: Recreate
+    grafana.ini:
+      server:
+        root_url: "https://grafana.${CLUSTER_DOMAIN}"
+      paths:
+        data: /var/lib/grafana/data
+        logs: /var/log/grafana
+        plugins: /var/lib/grafana/plugins
+        provisioning: /etc/grafana/provisioning
+      analytics:
+        check_for_updates: false
+      log:
+        mode: console
+      grafana_net:
+        url: https://grafana.net
+      auth.anonymous:
+        enabled: true
+      auth.basic:
+        disable_login_form: true
+    persistence:
+      enabled: false
+    ingress:
+      enabled: true
+      ingressClassName: nginx
+      annotations:
+        cert-manager.io/cluster-issuer: letsencrypt-prod
+        nginx.ingress.kubernetes.io/backend-protocol: "http"
+      hosts:
+      - grafana.${CLUSTER_DOMAIN}
+      path: /
+      tls:
+      - secretName: grafana-tls
+        hosts:
+        - grafana.${CLUSTER_DOMAIN}
+    sidecar:
+      dashboards:
+        enabled: true
+        label: grafana_dashboard
+      datasources:
+        enabled: true
+        label: grafana_datasource
+        org_name: Main Org.
+        org_role: Editor
+      auth.basic:
+        enabled: false
+      auth:
+        disable_login_form: true
+        disable_signout_menu: true
+    datasources:
+      datasources.yaml:
+        apiVersion: 1
+        deleteDatasources:
+        - name: Loki
+          orgId: 1
+        datasources:
+        - name: Prometheus
+          type: prometheus
+          access: proxy
+          url: http://kube-prometheus-stack-prometheus:9090
+          isDefault: false
+    dashboardProviders:
+      dashboardproviders.yaml:
+        apiVersion: 1
+        providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+        - name: "flux"
+          orgId: 1
+          folder: "flux"
+          type: file
+          updateIntervalSeconds: 10
+          disableDeletion: false
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/flux
+        - name: "loki"
+          orgId: 1
+          folder: "loki"
+          type: file
+          updateIntervalSeconds: 10
+          disableDeletion: false
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/loki
+        - name: "media"
+          orgId: 1
+          folder: "media"
+          type: file
+          updateIntervalSeconds: 10
+          disableDeletion: false
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/media
+        - name: "networking"
+          orgId: 1
+          folder: "networking"
+          type: file
+          updateIntervalSeconds: 10
+          disableDeletion: false
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/networking
+        - name: "power"
+          orgId: 1
+          folder: "power"
+          type: file
+          updateIntervalSeconds: 10
+          disableDeletion: false
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/power
+        - name: "storage"
+          orgId: 1
+          folder: "storage"
+          type: file
+          updateIntervalSeconds: 10
+          disableDeletion: false
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/storage
+        - name: "argo"
+          orgId: 1
+          folder: "argo"
+          type: file
+          updateIntervalSeconds: 10
+          disableDeletion: false
+          allowUiUpdates: true
+          options:
+            path: /var/lib/grafana/dashboards/argo
+        - name: 'grafana-dashboards-kubernetes'
+          orgId: 1
+          folder: 'Kubernetes'
+          type: file
+          disableDeletion: true
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/grafana-dashboards-kubernetes
+    dashboards:
+      grafana-dashboards-kubernetes:
+        k8s-system-api-server:
+          url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-api-server.json
+          token: ''
+        k8s-system-coredns:
+          url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-system-coredns.json
+          token: ''
+        k8s-views-global:
+          url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-global.json
+          token: ''
+        k8s-views-namespaces:
+          url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-namespaces.json
+          token: ''
+        k8s-views-nodes:
+          url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-nodes.json
+          token: ''
+        k8s-views-pods:
+          url: https://raw.githubusercontent.com/dotdc/grafana-dashboards-kubernetes/master/dashboards/k8s-views-pods.json
+          token: ''
+        etcd:
+          gnetId: 3070
+          datasource: Prometheus
+
+      default:
+        node-exporter-full:
+          datasource: Prometheus
+          url: https://grafana.com/api/dashboards/1860/revisions/22/download
+
+      flux:
+        cluster:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/v0.31.4/manifests/monitoring/monitoring-config/dashboards/cluster.json
+          datasource: Prometheus
+        control-plane:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/v0.31.4/manifests/monitoring/monitoring-config/dashboards/control-plane.json
+          datasource: Prometheus
+        logs:
+          url: https://raw.githubusercontent.com/fluxcd/flux2/v0.31.4/manifests/monitoring/monitoring-config/dashboards/logs.json
+          datasource: Loki
+
+      argo:
+        cluster:
+          url: https://raw.githubusercontent.com/argoproj/argo-cd/v2.5.5/examples/dashboard.json
+          datasource: Prometheus
+
+      networking:
+        cert-manager:
+          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
+          datasource: Prometheus
+        nginx-dashboard:
+          url: https://raw.githubusercontent.com/kubernetes/ingress-nginx/master/deploy/grafana/dashboards/nginx.json
+          datasource: Prometheus
+        # Ref: https://grafana.com/grafana/dashboards/13665
+        speedtest:
+          gnetId: 13665
+          revision: 1
+          datasource: Prometheus
+
+    serviceMonitor:
+      enabled: true

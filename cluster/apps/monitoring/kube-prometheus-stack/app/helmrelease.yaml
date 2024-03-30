@@ -1,0 +1,96 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: kube-prometheus-stack
+  namespace: monitoring
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://prometheus-community.github.io/helm-charts
+      chart: kube-prometheus-stack
+      version: 57.0.3
+      sourceRef:
+        kind: HelmRepository
+        name: prometheus-community
+        namespace: flux-system
+      interval: 5m
+  timeout: 20m
+  maxHistory: 3
+  values:
+    alertmanager:
+      enabled: true
+      ingress:
+        enabled: true
+        pathType: Prefix
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          nginx.ingress.kubernetes.io/backend-protocol: "http"
+        ingressClassName: nginx
+        hosts:
+        - alertmanager.${CLUSTER_DOMAIN}
+        tls:
+        - secretName: alertmanager-tls
+          hosts:
+          - alertmanager.${CLUSTER_DOMAIN}
+
+    grafana:
+      enabled: false
+
+    prometheus:
+      ingress:
+        enabled: true
+        pathType: Prefix
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          nginx.ingress.kubernetes.io/backend-protocol: "http"
+        ingressClassName: nginx
+        hosts:
+        - prometheus.${CLUSTER_DOMAIN}
+        tls:
+        - secretName: prometheus-tls
+          hosts:
+          - prometheus.${CLUSTER_DOMAIN}
+      prometheusSpec:
+        ruleSelector: {}
+        ruleNamespaceSelector: {}
+        ruleSelectorNilUsesHelmValues: false
+        serviceMonitorSelector: {}
+        serviceMonitorNamespaceSelector: {}
+        serviceMonitorSelectorNilUsesHelmValues: false
+        podMonitorSelector: {}
+        podMonitorNamespaceSelector: {}
+        podMonitorSelectorNilUsesHelmValues: false
+
+    kubeApiServer:
+      enabled: true
+
+    kubeEtcd:
+      enabled: true
+      service:
+        enabled: true
+        port: 2379
+        targetPort: 2379
+
+    kubelet:
+      enabled: true
+
+    kubeControllerManager:
+      enabled: true
+
+    nodeExporter:
+      serviceMonitor:
+        relabelings:
+        - action: replace
+          regex: (.*)
+          replacement: $1
+          sourceLabels:
+          - __meta_kubernetes_pod_node_name
+          targetLabel: kubernetes_node
+
+    kubeScheduler:
+      enabled: true
+
+    kubeProxy:
+      enabled: true
