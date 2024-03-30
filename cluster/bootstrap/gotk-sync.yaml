@@ -10,6 +10,8 @@ spec:
   url: https://github.com/mhumesf/nix-media.git
   ref:
     branch: main
+  ignore: |
+    /cluster/bootstrap
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
