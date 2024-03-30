@@ -114,6 +114,11 @@ in {
 
   system.stateVersion = "23.11";
 
+  age.secrets."k8s-sops-key" = {
+    file = ../secrets/k8s-sops-key.age;
+    path = "/var/lib/rancher/k3s/server/manifests/k8s-sops-key.yaml";
+  };
+
   systemd.tmpfiles.rules = [
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-components.yaml - - - - ${gotk-components}"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-sync.yaml - - - - ${gotk-sync}"

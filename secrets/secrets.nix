@@ -10,4 +10,5 @@ let
 in
 {
   "tokenFile.age".publicKeys = [ finn k3s ];
+  "k8s-sops-key.age".publicKeys = [ finn k3s ];
 }
