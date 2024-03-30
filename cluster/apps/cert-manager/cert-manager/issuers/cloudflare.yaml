@@ -1,0 +1,44 @@
+apiVersion: cert-manager.io/v1
+kind: ClusterIssuer
+metadata:
+    name: letsencrypt-prod
+spec:
+    acme:
+        #ENC[AES256_GCM,data:Jjq+l0dcnbUTaIHwpxN4zh+UjUDwrzcGNHaWNJCOmLNuATX6VB54OAOju6VOks//ApxD,iv:V7UwU7QeofPtnRvy6WbIPkUWGJxjFi0Vyp2GEsQ2lks=,tag:hFTwH1rFK4PmL8nLbeJmjw==,type:comment]
+        #ENC[AES256_GCM,data:PbXpFqJbVOBYUDsqBaYxgaKyxjHkQqilTHmAYJd2vaGVWngdLESXO7Cl2wAvzQ0gO8MSO4zuixP0mg==,iv:AZJgOEEd1q5QmklqL0B827cgSV7dReYSiRQHmij75zs=,tag:eHI+hPo5iZGCMIe/sqPeJg==,type:comment]
+        #ENC[AES256_GCM,data:PA9QEUMM64meuO0wPvlPlu7kUjEtXA8QP99hfLht46MoE+je0QhfnZG8q8dQ3oZ1u24=,iv:bhx/RaREa0ZcjXUmLvwh5zud2QdqKaM32+fpPfWgJh4=,tag:z6Td4qT3LEdubh4Q6KqUmg==,type:comment]
+        email: ENC[AES256_GCM,data:A5jUl9xYuGAlwR/T1GRRedI=,iv:D5IOXIrSCLt999Pn7b85rytr4vEy7KMfcK6rpr0tU98=,tag:aPAAan96v6lt5JMn+F822g==,type:str]
+        server: ENC[AES256_GCM,data:iTP0xLAAnHVKN20d5mur/tqUylLk3wMD6mEkrH/9VigL+3v5j2VHPFAt/IsXBg==,iv:7I2WvlaMDFuqJh1+domM4UxbScHQeESkv/8HzSMczoM=,tag:7ckVPPZvwOXVBgftCTJwMw==,type:str]
+        privateKeySecretRef:
+            #ENC[AES256_GCM,data:JIct3hTIEAioVOLdZmQ8tntVCWz7qkL5gfTDQ5GKqVOgw6wSumvLBNUFFX5w/9wWEKtWFelhTNWQdozGC+XfN5YK7p/fJg==,iv:73hGCWsQp2PQvJ/CZBYCAn2YjKWC5jBS/AWlTPGmMLE=,tag:VOFQlBBdypAmXYhjCJcRhA==,type:comment]
+            name: ENC[AES256_GCM,data:bI2NFCnrFOyn41eGCFjKrXBKz7akeNQ1bA==,iv:I2u94nA/tzofxF2MLLzznFS4lsHN9VGIivQQJAlH4Tc=,tag:fMRQT65L+q0SOohkDZrBuQ==,type:str]
+        solvers:
+            - selector:
+                dnsZones:
+                    - ENC[AES256_GCM,data:ZJNICKin,iv:ed1fuZ1B5YcomqGJY73YLBuaudbSH6ZqFUyE96gdn+0=,tag:0vFdSSu1tZbb/uWAJuBRWA==,type:str]
+              dns01:
+                cloudflare:
+                    email: ENC[AES256_GCM,data:/s6a2KyOrdUu1z1VVO0L,iv:kbbwh9IHCjjYEyLU1Q7IC1E6/iCmh1cDZ+j5kqK6IHo=,tag:g/6WhC5EtbEi5DPZA470qw==,type:str]
+                    apiKeySecretRef:
+                        name: ENC[AES256_GCM,data:hmAZazR0M5mrJPE1zTQMs4s=,iv:raVkQoYaQd6+7sNmD7n5B7WmNSsTXSVZkGA/ZfkFsDI=,tag:KWHf5S/VHy9QDhVQr1zYcg==,type:str]
+                        key: ENC[AES256_GCM,data:hpXXheRtGmY5KdLu7fthv/4J,iv:E43lKpgSSoVl+wX6ks/abXLtHKrg4dldctx+LyK3aRc=,tag:kjA2ldHrBBJNbc799CgihA==,type:str]
+sops:
+    kms: []
+    gcp_kms: []
+    azure_kv: []
+    hc_vault: []
+    age:
+        - recipient: age1rchcs2gk3wa0h8hdsvm3enu7qa4yq9gmag9k32qsfvrgghgufq2smx4s3n
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBzRzdXSkZOUWdOZFpWVEpt
+            NDkyRXk5SHY0Rk9sY21uakdGa0VJRGJFb3cwCkhzZG5LaVNkcmZhVmF5Ry9zS1Qx
+            MkNWU3MzT0JTTzZubFcyUUFyZ3ZvQWMKLS0tIEYyWGF0Rm1nSUJQOThZNTRKbmxw
+            VmdFZVFzUHY5Vnd0Zm9CZXZVWXZvM0kKXHuEXhdKtvswY5P49I3x+CN1ibhyk0nl
+            VAqmEOLkMLMG6FizVnHtqceBXKTt76UbVBPM7MCSviYSRfIJsSDzNg==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2024-03-30T04:17:50Z"
+    mac: ENC[AES256_GCM,data:DYwKELKeFE8nqQgv+66boKZcJcGfHlG8HC7VmHwbqIpm7S8w7CZ3pS3qPAejhZzrzmDrSjpSM9GH5a7bmsyeaKkExbZqTst1muuxy49URbsBhV4OzisXSdaD/MQaxHdVyoeGAaqcHOugiONrKSpWiBaZz6ddZLgj7Ow4+T+7mBE=,iv:J7j/ksBEOFIWTQa61Ie0Krx5N6AdP5LT5jiGNNOeux4=,tag:dwNE4P0EQrqT5cSNUhqhwA==,type:str]
+    pgp: []
+    encrypted_regex: ^(data|stringData|acme)$
+    version: 3.8.1
