@@ -1,0 +1,71 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta2
+kind: HelmRelease
+metadata:
+  name: plex
+  namespace: default
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.0.4
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  values:
+    controllers:
+      plex:
+        containers:
+          app:
+            image:
+              repository: docker.io/plexinc/pms-docker
+              tag: latest
+            env:
+              VERSION: public
+              UMASK_SET: "022"
+              # visit https://plex.tv/claim
+              PLEX_CLAIM: "claim-ozexPUZCJWhENGsVDgUH"
+              PLEX_UID: "1000"
+              PLEX_GID: "1000"
+              PLEX_ADVERTISE_URL: "https://plex.${CLUSTER_DOMAIN}"
+            securityContext:
+              privileged: true
+    service:
+      app:
+        primary: true
+        controller: plex
+        ports:
+          http:
+            port: 32400
+        type: LoadBalancer
+        loadBalancerIP: "${PLEX}"
+        externalTrafficPolicy: Local
+    ingress:
+      main:
+        enabled: true
+        className: nginx
+        annotations:
+          cert-manager.io/cluster-issuer: letsencrypt-prod
+          nginx.ingress.kubernetes.io/backend-protocol: "http"
+        hosts:
+        - host: plex.${CLUSTER_DOMAIN}
+          paths:
+          - path: /
+            service:
+              name: plex
+              port: 32400
+        tls:
+        - secretName: plex-tls
+          hosts:
+          - plex.${CLUSTER_DOMAIN}
+    persistence:
+      movies:
+        enabled: true
+        hostPath: /movies
+        type: hostPath
+        globalMounts:
+        - path: /movies
+          readOnly: true
