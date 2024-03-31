@@ -4,6 +4,8 @@ kind: Kustomization
 metadata:
   name: cluster-apps-plex
   namespace: flux-system
+  annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
 spec:
   dependsOn:
   - name: cluster-apps-cert-manager
@@ -27,9 +29,7 @@ spec:
   timeout: 3m
   postBuild:
     substituteFrom:
-    - kind: ConfigMap
-      name: cluster-settings
-      optional: false
     - kind: Secret
       name: cluster-secrets
-      optional: false
+    - kind: ConfigMap
+      name: cluster-settings
