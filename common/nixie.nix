@@ -17,9 +17,27 @@
     };
   };
 
+  environment.variables.EDITOR = "nvim";
+  environment.systemPackages = with pkgs; [
+    htop
+    ripgrep
+    starship
+    powertop
+    neovim
+    git
+    tree
+    tmux
+    pciutils
+    iptables
+  ];
+
   environment.shellAliases = {
     vi = "nvim";
     vim = "nvim";
   };
+
+  time.timeZone = "America/New_York";
+
+  services.openssh.enable = true;
 }
 
