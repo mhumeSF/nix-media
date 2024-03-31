@@ -1,0 +1,22 @@
+---
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+- actions-runner-controller.yaml
+- argoproj.yaml
+- bitnami.yaml
+- bjw-s.yaml
+- cilium.yaml
+- coredns.yaml
+- external-dns.yaml
+- gitea.yaml
+- grafana.yaml
+- ingress-nginx.yaml
+- jenkins.yaml
+- jetstack.yaml
+- k8s-gateway.yaml
+- metallb.yaml
+- metrics-server.yaml
+- openebs-zfslocalpv.yaml
+- plex.yaml
+- prometheus-community.yaml
