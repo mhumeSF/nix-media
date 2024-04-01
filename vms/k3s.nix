@@ -22,7 +22,6 @@ in {
     agenix.nixosModules.default
   ];
 
-
   microvm = {
 
     vcpu = 8;
@@ -56,21 +55,26 @@ in {
       macvtap.link = "bridge";
       macvtap.mode = "bridge";
     }];
+
   };
 
   fileSystems = {
-    "/movies".neededForBoot = true;
     "/etc/ssh".neededForBoot = true;
+    "/movies".neededForBoot = true;
   };
 
   time.timeZone = "America/New_York";
 
   networking = {
     hostName         = "k3s";
-    firewall.package = pkgs.nftables;
     enableIPv6       = false;
     nameservers      = [ "1.1.1.1" "1.0.0.1" ];
-    firewall.allowedTCPPorts = [ 6443 ];
+
+    nftables.enable = true;
+    firewall = {
+      enable = true;
+      allowedTCPPorts = [ 6443 ];
+    };
   };
 
   systemd.network = {

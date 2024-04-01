@@ -37,6 +37,7 @@
       macvtap.link = "bridge";
       macvtap.mode = "bridge";
     }];
+
   };
 
   fileSystems = {
@@ -47,10 +48,13 @@
 
   networking = {
     hostName         = "router";
-    firewall.package = pkgs.nftables;
     enableIPv6       = false;
     nameservers      = [ "1.1.1.1" "1.0.0.1" ];
-    nftables.enable  = true;
+
+    # nftables.enable = true;
+    # firewall = {
+    #   enable = true;
+    # };
   };
 
   systemd.network = {
