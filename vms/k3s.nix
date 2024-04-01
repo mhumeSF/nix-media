@@ -24,6 +24,19 @@ in {
 
   microvm = {
 
+    hypervisor = "cloud-hypervisor";
+
+    devices = [
+      {
+        bus = "pci";
+        path = "0000:08:00.0";
+      }
+      {
+        bus = "pci";
+        path = "0000:08:00.1";
+      }
+    ];
+
     vcpu = 8;
     mem = 16000;
 
