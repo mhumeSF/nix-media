@@ -27,7 +27,7 @@ spec:
               VERSION: public
               UMASK_SET: "022"
               # visit https://plex.tv/claim
-              PLEX_CLAIM: "claim-saQeedny7yc2x3A2LagG"
+              PLEX_CLAIM: ${PLEX_CLAIM}
               PLEX_UID: "1000"
               PLEX_GID: "1000"
               PLEX_ADVERTISE_URL: "https://plex.${CLUSTER_DOMAIN},http://{PLEX}:32400"
