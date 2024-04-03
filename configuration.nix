@@ -68,7 +68,4 @@ in {
   users.users.nixie.extraGroups = ["docker"];
 
   # systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
-
-  system.stateVersion = "23.05";
-
 }

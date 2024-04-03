@@ -39,5 +39,7 @@
   time.timeZone = "America/New_York";
 
   services.openssh.enable = true;
+
+  system.stateVersion = "23.11";
 }
 

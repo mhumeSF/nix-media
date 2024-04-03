@@ -76,8 +76,6 @@ in {
     "/movies".neededForBoot = true;
   };
 
-  time.timeZone = "America/New_York";
-
   networking = {
     hostName         = "k3s";
     enableIPv6       = false;
@@ -101,6 +99,8 @@ in {
     };
   };
 
+  environment.systemPackages = with pkgs; [ k3s ];
+
   services.k3s.enable = true;
   services.k3s.role = "server";
   services.k3s.extraFlags = toString [
@@ -118,18 +118,6 @@ in {
     file = ../secrets/tokenFile.age;
     path = "/etc/rancher/k3s/token-auth-file.csv";
   };
-
-  environment.variables.EDITOR = "nvim";
-  environment.systemPackages = with pkgs; [
-    htop
-    neovim
-    tree
-    k3s
-  ];
-
-  services.openssh.enable = true;
-
-  system.stateVersion = "23.11";
 
   age.secrets."k8s-sops-key" = {
     file = ../secrets/k8s-sops-key.age;

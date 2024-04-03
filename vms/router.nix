@@ -12,6 +12,8 @@
 
   microvm = {
 
+    hypervisor = "cloud-hypervisor";
+
     vcpu = 2;
     mem = 2000;
 
@@ -44,8 +46,6 @@
     "/etc/ssh".neededForBoot = true;
   };
 
-  time.timeZone = "America/New_York";
-
   networking = {
     hostName         = "router";
     enableIPv6       = false;
@@ -68,15 +68,4 @@
     };
   };
 
-  environment.variables.EDITOR = "nvim";
-  environment.systemPackages = with pkgs; [
-    htop
-    neovim
-    tree
-    avahi
-  ];
-
-  services.openssh.enable = true;
-
-  system.stateVersion = "23.11";
 }
