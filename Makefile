@@ -14,4 +14,6 @@ all:
 			--use-remote-sudo \
 			--target-host nixie@$(HOST_IP) \
 			--build-host nixie@$(HOST_IP) \
-			--show-trace --verbose
+			--show-trace \
+			--verbose \
+			--cores 16
