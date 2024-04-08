@@ -9,15 +9,18 @@
     ];
 
   boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sr_mod" ];
-  boot.initrd.kernelModules = [ ];
+  boot.initrd.kernelModules = [ "vfio_pci" "vfio" "vfio_iommu_type1" ];
 
   boot.kernelModules = [ "kvm-amd" ];
   boot.extraModulePackages = [ ];
   boot.kernelParams = [
-    "vfio-pci.ids=1002:1638"
+    "amd_iommu=on"
+    "vfio-pci.ids=1002:1638,1002:1637,1022:15df,1022:1639"
+    "vfio_iommu_type1.allow_unsafe_interrupts=1"
+    "initcall_blacklist=sysfb_init"
   ];
 
-  boot.blacklistedKernelModules = [ "amdgpu" "radeon" "nouveau" ];
+  boot.blacklistedKernelModules = [ "amdgpu" "snd_hda_intel" "ccp" ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
   hardware.cpu.amd.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
