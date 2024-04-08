@@ -5,6 +5,8 @@
 }:
 
 {
+  boot.kernelPackages = pkgs.linuxPackages_latest;
+
   security.sudo.wheelNeedsPassword = false;
 
   users.users = {
@@ -19,6 +21,8 @@
 
   environment.variables.EDITOR = "nvim";
   environment.systemPackages = with pkgs; [
+    amdgpu_top
+    linuxKernel.packages.linux_6_8.amdgpu-pro
     htop
     ripgrep
     starship

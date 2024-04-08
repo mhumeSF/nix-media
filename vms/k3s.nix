@@ -22,9 +22,27 @@ in {
     agenix.nixosModules.default
   ];
 
+  boot.initrd.kernelModules = [ "amdgpu" ];
+
   microvm = {
 
+    # QEMU
+    # hypervisor = "qemu";
+
+    # qemu.machine = "q35";
+
+    # qemu.extraArgs = [
+    #   "-device" "vfio-pci,host=0000:08:00.0,multifunction=on,romfile=/movies/image.rom"
+    #   "-device" "vfio-pci,host=0000:08:00.1,multifunction=on"
+    # ];
+
+    # CLOUD-HYPERVISOR
+
     hypervisor = "cloud-hypervisor";
+
+    kernelParams = [
+      "pcie_acs_override=downstream,multifunction"
+    ];
 
     devices = [
       {
@@ -34,6 +52,18 @@ in {
       {
         bus = "pci";
         path = "0000:08:00.1";
+      }
+      {
+        bus = "pci";
+        path = "0000:08:00.2";
+      }
+      {
+        bus = "pci";
+        path = "0000:08:00.3";
+      }
+      {
+        bus = "pci";
+        path = "0000:08:00.4";
       }
     ];
 
@@ -84,7 +114,13 @@ in {
     nftables.enable = true;
     firewall = {
       enable = true;
-      allowedTCPPorts = [ 6443 ];
+      allowedTCPPorts = [
+        6443  # kube-apiserver
+        7472  # metal-lb
+        7473  # metal-lb
+        9100  # node-exporter
+        10250 # kubelet
+      ];
     };
   };
 
