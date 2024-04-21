@@ -4,11 +4,10 @@ let
   users = [ nixie ];
 
   k3s = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGsDGg0hCjEJVAjvYcIuB/wCAtT8OW1ml3Ncp251YZJm";
-  router = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAID9EXglVJoj2Ql0E4F0GK5BRjAIKrrCej974LGTo7Yau";
-  media = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPQDszu8au1EAjZp0T3HRoNA6twCWcRPGrtHhZyI7KDk";
-  systems = [ k3s router media ];
+  media = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPKUyAjV0GEcF8CTUI7p90vja7BHWaWKuUEkwqdMNp6d";
+  systems = [ media ];
 in
 {
-  "tokenFile.age".publicKeys = [ finn k3s ];
-  "k8s-sops-key.age".publicKeys = [ finn k3s ];
+  "tokenFile.age".publicKeys = [ finn media k3s ];
+  "k8s-sops-key.age".publicKeys = [ finn media k3s ];
 }

@@ -16,4 +16,5 @@ all:
 			--build-host nixie@$(HOST_IP) \
 			--show-trace \
 			--verbose \
-			--cores 16
+			--cores 16 \
+			--upgrade-all

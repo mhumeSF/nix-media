@@ -29,7 +29,7 @@ spec:
               # visit https://plex.tv/claim
               PLEX_CLAIM: ${PLEX_CLAIM}
               PLEX_UID: "1000"
-              PLEX_GID: "1000"
+              PLEX_GID: "100"
               PLEX_ADVERTISE_URL: "https://plex.${CLUSTER_DOMAIN},http://{PLEX}:32400"
             securityContext:
               privileged: true
@@ -62,6 +62,34 @@ spec:
           hosts:
           - plex.${CLUSTER_DOMAIN}
     persistence:
+      tmp:
+        enabled: true
+        hostPath: /plex/tmp
+        type: hostPath
+        globalMounts:
+        - path: /tmp
+          readOnly: false
+      transcode:
+        enabled: true
+        hostPath: /plex/transcode
+        type: hostPath
+        globalMounts:
+        - path: /transcode
+          readOnly: false
+      config:
+        enabled: true
+        hostPath: /plex/config
+        type: hostPath
+        globalMounts:
+        - path: /config
+          readOnly: false
+      tv:
+        enabled: true
+        hostPath: /tv
+        type: hostPath
+        globalMounts:
+        - path: /tv
+          readOnly: true
       movies:
         enabled: true
         hostPath: /movies
