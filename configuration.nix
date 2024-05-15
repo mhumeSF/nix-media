@@ -20,6 +20,10 @@ in {
   boot.loader.systemd-boot.enable = true;
   boot.kernel.sysctl."net.ipv4.conf.all.forwarding" = 1;
 
+  boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.forceImportRoot = false;
+  networking.hostId = "2518ac65";
+
   networking = {
     useDHCP     = false;
     useNetworkd = true;

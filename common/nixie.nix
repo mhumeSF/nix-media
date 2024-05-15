@@ -32,6 +32,7 @@
     pciutils
     iptables
     wget
+    zfs
   ];
 
   environment.shellAliases = {
