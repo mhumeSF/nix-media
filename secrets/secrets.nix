@@ -4,7 +4,7 @@ let
   users = [ nixie ];
 
   k3s = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGsDGg0hCjEJVAjvYcIuB/wCAtT8OW1ml3Ncp251YZJm";
-  media = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIPKUyAjV0GEcF8CTUI7p90vja7BHWaWKuUEkwqdMNp6d";
+  media = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDK2AolLpi/7mXhBmxoFhe4cJd1uDwPPsli1GRYq+zxm";
   systems = [ media ];
 in
 {
