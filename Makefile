@@ -17,4 +17,5 @@ all:
 			--show-trace \
 			--verbose \
 			--cores 16 \
-			--upgrade-all
+			--upgrade-all \
+			--option eval-cache false
