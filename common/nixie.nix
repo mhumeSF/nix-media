@@ -33,6 +33,8 @@
     iptables
     wget
     zfs
+    k3s
+    lm_sensors
   ];
 
   environment.shellAliases = {

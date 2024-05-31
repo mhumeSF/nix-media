@@ -32,22 +32,22 @@
         ./configuration.nix
         agenix.nixosModules.default
 
-        microvm.nixosModules.host
-        {
-          microvm.autostart = [
-            "k3s"
-          ];
-        }
+        # microvm.nixosModules.host
+        # {
+        #   microvm.autostart = [
+        #     "k3s"
+        #   ];
+        # }
 
-        {
-          microvm.vms = {
-            k3s = {
-              pkgs = import nixpkgs { system = "x86_64-linux"; };
-              specialArgs = { inherit agenix; };
-              config = import ./vms/k3s.nix;
-            };
-          };
-        }
+        # {
+        #   microvm.vms = {
+        #     k3s = {
+        #       pkgs = import nixpkgs { system = "x86_64-linux"; };
+        #       specialArgs = { inherit agenix; };
+        #       config = import ./vms/k3s.nix;
+        #     };
+        #   };
+        # }
       ];
     };
 
