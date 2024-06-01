@@ -94,6 +94,19 @@ in {
   users.users.nixie.extraGroups = ["docker"];
 
   # ------------------------------------------------------------------/
+  services.etcd = {
+    enable = true;
+  };
+
+  systemd.services.etcd = {
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+  };
+
+  systemd.services.etcd = {
+    wants = [ "etcd.service" ];
+    after = [ "etcd.service" ];
+  };
 
   services.k3s.enable = true;
   services.k3s.role = "server";
@@ -106,6 +119,7 @@ in {
     "--disable-cloud-controller"
     "--disable-network-policy"
     "--kube-apiserver-arg=\"token-auth-file=/etc/rancher/k3s/token-auth-file.csv\""
+    "--datastore-endpoint=http://localhost:2379"
   ];
 
   age.secrets."tokenFile" = {
