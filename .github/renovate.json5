@@ -1,0 +1,42 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":disableRateLimiting",
+    ":disableDependencyDashboard",
+    ":prHourlyLimitNone"
+  ],
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "merge",
+  "platformAutomerge": false,
+  "flux": {"fileMatch": ["cluster/.+\\.yaml$"]},
+  "helm-values": {"fileMatch": ["cluster/.+helmrelease\\.yaml$"]},
+  "kubernetes": {"fileMatch": ["cluster/.+\\.yaml$"]},
+  "customManagers": [
+    {
+      "customType": "regex",
+      "fileMatch": ["cluster/.+\\.yaml$"],
+      "matchStrings": [
+        "registryUrl=(?<registryUrl>.*?)\n *chart: (?<depName>.*?)\n *version: (?<currentValue>.*)\n",
+        "registryUrl=(?<registryUrl>.*?) chart=(?<depName>.*?)\n.*\\/(?<currentValue>.*?)\\/"
+      ],
+      "datasourceTemplate": "helm"
+    },
+    {
+      "customType": "regex",
+      "description": "Update jenkins plugins in helm-release",
+      "fileMatch": ["cluster/apps/default/jenkins/app/helmrelease.yaml"],
+      "matchStrings": ["\\s+-\\s(?<depName>[\\w-]+):(?<currentValue>\\S+)"],
+      "datasourceTemplate": "jenkins-plugins",
+      "versioningTemplate": "maven"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Auto-merge updates created by custom managers",
+      "matchManagers": ["custom.regex"],
+      "automerge": true
+    }
+  ]
+}
