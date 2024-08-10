@@ -97,3 +97,10 @@ spec:
         globalMounts:
         - path: /movies
           readOnly: true
+      misc:
+        enabled: true
+        hostPath: /tank0/misc
+        type: hostPath
+        globalMounts:
+        - path: /misc
+          readOnly: true
