@@ -1,0 +1,31 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": [
+    "config:recommended",
+    ":disableRateLimiting",
+    ":disableDependencyDashboard",
+    ":prHourlyLimitNone"
+  ],
+  "gitAuthor": "Mike Hume <mhumesf@gmail.com>",
+  "automerge": true,
+  "automergeType": "pr",
+  "automergeStrategy": "merge",
+  "platformAutomerge": false,
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update jenkins plugins in helm-release",
+      "fileMatch": ["cluster/apps/default/jenkins/app/helmrelease.yaml"],
+      "matchStrings": ["\\s+-\\s(?<depName>[\\w-]+):(?<currentValue>\\S+)"],
+      "datasourceTemplate": "jenkins-plugins",
+      "versioningTemplate": "maven"
+    }
+  ],
+  "packageRules": [
+    {
+      "description": "Auto-merge updates created by custom managers",
+      "matchManagers": ["custom.regex"],
+      "automerge": true
+    }
+  ]
+}
