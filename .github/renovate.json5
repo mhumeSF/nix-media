@@ -10,7 +10,7 @@
   "automerge": true,
   "automergeType": "branch",
   "automergeStrategy": "merge",
-  "platformAutomerge": false,
+  "platformAutomerge": true,
   "flux": {"fileMatch": ["cluster/.+\\.yaml$"]},
   "helm-values": {"fileMatch": ["cluster/.+helmrelease\\.yaml$"]},
   "kubernetes": {"fileMatch": ["cluster/.+\\.yaml$"]},
