@@ -8,7 +8,7 @@
     "helpers:pinGitHubActionDigests"
   ],
   "automerge": true,
-  "automergeType": "pr",
+  "automergeType": "branch",
   "automergeStrategy": "merge",
   "platformAutomerge": true,
   "flux": {"fileMatch": ["cluster/.+\\.yaml$"]},
