@@ -4,10 +4,11 @@
     "config:recommended",
     ":disableRateLimiting",
     ":disableDependencyDashboard",
-    ":prHourlyLimitNone"
+    ":prHourlyLimitNone",
+    "helpers:pinGitHubActionDigests"
   ],
   "automerge": true,
-  "automergeType": "pr",
+  "automergeType": "branch",
   "automergeStrategy": "merge",
   "platformAutomerge": false,
   "flux": {"fileMatch": ["cluster/.+\\.yaml$"]},
