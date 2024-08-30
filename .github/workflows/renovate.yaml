@@ -5,7 +5,7 @@ on:
     branches:
     - main
   schedule:
-  - cron: '* */2 * * 1-5'
+  - cron: '0 12 * * 1-5'
 
 env:
   RENOVATE_REPOSITORIES: "${{ github.repository }}"
