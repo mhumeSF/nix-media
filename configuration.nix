@@ -103,7 +103,7 @@ in {
     after = [ "network-online.target" ];
   };
 
-  systemd.services.etcd = {
+  systemd.services.k3s = {
     wants = [ "etcd.service" ];
     after = [ "etcd.service" ];
   };
