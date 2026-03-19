@@ -20,6 +20,7 @@ in {
   imports = [
     ../common/avahi.nix
     ../common/nixie.nix
+    ../common/cilium-bootstrap.nix
     agenix.nixosModules.default
   ];
 
