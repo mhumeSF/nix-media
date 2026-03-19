@@ -2,20 +2,7 @@
   self,
   pkgs,
   ...
-}: let
-
-  gotk-components = pkgs.writeTextFile {
-    name = "gotk-components";
-    text = builtins.readFile ./cluster/bootstrap/gotk-components.yaml;
-  };
-
-  gotk-sync = pkgs.writeTextFile {
-    name = "gotk-sync";
-    text = builtins.readFile ./cluster/bootstrap/gotk-sync.yaml;
-  };
-
-  unstable = import <nixpkgs-unstable> {};
-in {
+}: {
   imports = [
     ./hardware-configuration.nix
     ./disk-config.nix
@@ -48,15 +35,13 @@ in {
     firewall = {
       enable = true;
       allowedUDPPorts = [ 5353 ];
-      allowedTCPPorts = [
-        6443  # kube-apiserver
-        7472  # metal-lb
-        7473  # metal-lb
-        9100  # node-exporter
-        10250 # kubelet
-      ];
     };
   };
+
+  # Disable br_netfilter for bridged VM traffic
+  # This prevents k8s/docker iptables rules from affecting VM network traffic
+  boot.kernel.sysctl."net.bridge.bridge-nf-call-iptables" = 0;
+  boot.kernel.sysctl."net.bridge.bridge-nf-call-ip6tables" = 0;
 
   systemd.network = {
     enable = true;
@@ -86,56 +71,32 @@ in {
       };
     };
 
-    wait-online.ignoredInterfaces = [ "wifi"];
+    wait-online.ignoredInterfaces = [ "wifi" "vm-internal" "vm-sandbox" "virbr-internal" ];
+
+    # Bridge for internal VM network (router <-> sandbox)
+    netdevs."10-virbr-internal" = {
+      netdevConfig = {
+        Kind = "bridge";
+        Name = "virbr-internal";
+      };
+    };
+
+    networks."10-virbr-internal" = {
+      matchConfig.Name = "virbr-internal";
+      address = [ "10.99.0.254/24" ];
+      networkConfig.ConfigureWithoutCarrier = true;
+    };
+
+    # Attach VM tap interfaces to internal bridge
+    networks."15-vm-internal" = {
+      matchConfig.Name = "vm-internal";
+      networkConfig.Bridge = "virbr-internal";
+    };
+
+    networks."15-vm-sandbox" = {
+      matchConfig.Name = "vm-sandbox";
+      networkConfig.Bridge = "virbr-internal";
+    };
   };
 
-  virtualisation.docker.enable = true;
-  virtualisation.docker.enableOnBoot = true;
-  users.users.nixie.extraGroups = ["docker"];
-
-  # ------------------------------------------------------------------/
-  services.etcd = {
-    enable = true;
-  };
-
-  systemd.services.etcd = {
-    wants = [ "network-online.target" ];
-    after = [ "network-online.target" ];
-  };
-
-  systemd.services.k3s = {
-    wants = [ "etcd.service" ];
-    after = [ "etcd.service" ];
-  };
-
-  services.k3s.enable = true;
-  services.k3s.role = "server";
-  services.k3s.extraFlags = toString [
-    "--write-kubeconfig-mode=0640"
-    "--disable servicelb"
-    "--disable traefik"
-    "--disable local-storage"
-    "--disable metrics-server"
-    "--disable-cloud-controller"
-    "--disable-network-policy"
-    "--kube-apiserver-arg=\"token-auth-file=/etc/rancher/k3s/token-auth-file.csv\""
-    "--datastore-endpoint=http://localhost:2379"
-  ];
-
-  age.secrets."tokenFile" = {
-    file = secrets/tokenFile.age;
-    path = "/etc/rancher/k3s/token-auth-file.csv";
-  };
-
-  age.secrets."k8s-sops-key" = {
-    file = secrets/k8s-sops-key.age;
-    path = "/var/lib/rancher/k3s/server/manifests/k8s-sops-key.yaml";
-  };
-
-  systemd.tmpfiles.rules = [
-    "L+ /var/lib/rancher/k3s/server/manifests/gotk-components.yaml - - - - ${gotk-components}"
-    "L+ /var/lib/rancher/k3s/server/manifests/gotk-sync.yaml - - - - ${gotk-sync}"
-  ];
-
-  # systemd.services."systemd-networkd".environment.SYSTEMD_LOG_LEVEL = "debug";
 }

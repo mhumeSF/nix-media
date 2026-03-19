@@ -2,6 +2,7 @@
   pkgs,
   config,
   agenix,
+  unstable,
   ...
 }: let
 
@@ -25,16 +26,6 @@ in {
   boot.initrd.kernelModules = [ "amdgpu" ];
 
   microvm = {
-
-    # QEMU
-    # hypervisor = "qemu";
-
-    # qemu.machine = "q35";
-
-    # qemu.extraArgs = [
-    #   "-device" "vfio-pci,host=0000:08:00.0,multifunction=on,romfile=/movies/image.rom"
-    #   "-device" "vfio-pci,host=0000:08:00.1,multifunction=on"
-    # ];
 
     # CLOUD-HYPERVISOR
 
@@ -78,9 +69,9 @@ in {
         proto      = "virtiofs";
       }
       {
-        source     = "/var/lib/microvms/${config.networking.hostName}/storage/etc/ssh";
-        mountPoint = "/etc/ssh";
-        tag        = "ssh";
+        source     = "/var/lib/microvms/${config.networking.hostName}/persist";
+        mountPoint = "/persist";
+        tag        = "persist";
         proto      = "virtiofs";
       }
       {
@@ -102,9 +93,14 @@ in {
   };
 
   fileSystems = {
-    "/etc/ssh".neededForBoot = true;
+    "/persist".neededForBoot = true;
     "/movies".neededForBoot = true;
   };
+
+  services.openssh.hostKeys = [
+    { path = "/persist/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
+    { path = "/persist/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
+  ];
 
   networking = {
     hostName         = "k3s";
@@ -137,9 +133,27 @@ in {
 
   environment.systemPackages = with pkgs; [ k3s ];
 
+  # etcd for k3s datastore
+  services.etcd = {
+    enable = true;
+    package = unstable.etcd;
+    dataDir = "/persist/etcd";
+  };
+
+  systemd.services.etcd = {
+    wants = [ "network-online.target" ];
+    after = [ "network-online.target" ];
+  };
+
+  systemd.services.k3s = {
+    wants = [ "etcd.service" ];
+    after = [ "etcd.service" ];
+  };
+
   services.k3s.enable = true;
   services.k3s.role = "server";
   services.k3s.extraFlags = toString [
+    "--tls-san k3s.local"
     "--write-kubeconfig-mode=0640"
     "--disable servicelb"
     "--disable traefik"
@@ -148,6 +162,7 @@ in {
     "--disable-cloud-controller"
     "--disable-network-policy"
     "--kube-apiserver-arg=\"token-auth-file=/etc/rancher/k3s/token-auth-file.csv\""
+    "--datastore-endpoint=http://localhost:2379"
   ];
 
   age.secrets."tokenFile" = {

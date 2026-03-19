@@ -3,6 +3,7 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     microvm.url = "github:astro/microvm.nix";
     microvm.inputs.nixpkgs.follows = "nixpkgs";
@@ -18,6 +19,7 @@
   outputs = {
     self,
     nixpkgs,
+    nixpkgs-unstable,
     agenix,
     disko,
     microvm,
@@ -27,6 +29,9 @@
   {
     nixosConfigurations.media = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
+      specialArgs = {
+        unstable = import nixpkgs-unstable { system = "x86_64-linux"; };
+      };
       modules = [
         disko.nixosModules.disko
         ./configuration.nix
@@ -37,6 +42,7 @@
           microvm.autostart = [
             "router"
             "k3s"
+            "sandbox"
           ];
         }
 
@@ -49,8 +55,16 @@
             };
             k3s = {
               pkgs = import nixpkgs { system = "x86_64-linux"; };
-              specialArgs = { inherit agenix; };
+              specialArgs = {
+                inherit agenix;
+                unstable = import nixpkgs-unstable { system = "x86_64-linux"; };
+              };
               config = import ./vms/k3s.nix;
+            };
+            sandbox = {
+              pkgs = import nixpkgs { system = "x86_64-linux"; };
+              specialArgs = { inherit agenix; };
+              config = import ./vms/sandbox.nix;
             };
           };
         }
