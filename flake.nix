@@ -2,7 +2,7 @@
   description = "A simple NixOS flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-24.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
 
     microvm.url = "github:astro/microvm.nix";
     microvm.inputs.nixpkgs.follows = "nixpkgs";
@@ -32,22 +32,28 @@
         ./configuration.nix
         agenix.nixosModules.default
 
-        # microvm.nixosModules.host
-        # {
-        #   microvm.autostart = [
-        #     "k3s"
-        #   ];
-        # }
+        microvm.nixosModules.host
+        {
+          microvm.autostart = [
+            "router"
+            "k3s"
+          ];
+        }
 
-        # {
-        #   microvm.vms = {
-        #     k3s = {
-        #       pkgs = import nixpkgs { system = "x86_64-linux"; };
-        #       specialArgs = { inherit agenix; };
-        #       config = import ./vms/k3s.nix;
-        #     };
-        #   };
-        # }
+        {
+          microvm.vms = {
+            router = {
+              pkgs = import nixpkgs { system = "x86_64-linux"; };
+              specialArgs = { inherit agenix; };
+              config = import ./vms/router.nix;
+            };
+            k3s = {
+              pkgs = import nixpkgs { system = "x86_64-linux"; };
+              specialArgs = { inherit agenix; };
+              config = import ./vms/k3s.nix;
+            };
+          };
+        }
       ];
     };
 

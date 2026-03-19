@@ -80,8 +80,8 @@ in {
         matchConfig.Name = "bridge";
         networkConfig = {
           DHCP = "ipv4";
-          IPForward = "yes";
-          MulticastDNS = true; # Using systemd for mDNS instead of avahi
+          IPv4Forwarding = true;
+          MulticastDNS = true;
         };
       };
     };
