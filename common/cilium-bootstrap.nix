@@ -41,6 +41,7 @@
         --set k8sServiceHost=localhost \
         --set k8sServicePort=6443 \
         --set ipam.mode=kubernetes \
+        --set ipam.operator.clusterPoolIPv4PodCIDRList="10.42.0.0/16" \
         --set l2announcements.enabled=true \
         --set externalIPs.enabled=true \
         --set ingressController.enabled=true \

@@ -121,6 +121,10 @@ in {
         9100  # node-exporter
         10250 # kubelet
       ];
+      allowedUDPPorts = [
+        8472  # cilium vxlan
+      ];
+      trustedInterfaces = [ "cilium_+" "lxc+" ];
     };
   };
 
