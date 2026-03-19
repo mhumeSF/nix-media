@@ -163,6 +163,7 @@ in {
   services.k3s.extraFlags = toString [
     "--tls-san k3s.local"
     "--write-kubeconfig-mode=0640"
+    "--disable-network-policy"
     "--disable servicelb"
     "--disable traefik"
     "--disable local-storage"
