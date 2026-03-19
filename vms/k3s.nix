@@ -111,9 +111,12 @@ in {
     firewall = {
       enable = true;
       allowedTCPPorts = [
+        80    # ingress http
+        443   # ingress https
+        4240  # cilium-health
+        4244  # hubble-server
+        4245  # hubble-relay
         6443  # kube-apiserver
-        7472  # metal-lb
-        7473  # metal-lb
         9100  # node-exporter
         10250 # kubelet
       ];
@@ -160,7 +163,8 @@ in {
     "--disable local-storage"
     "--disable metrics-server"
     "--disable-cloud-controller"
-    "--disable-network-policy"
+    "--flannel-backend=none"
+    "--disable-kube-proxy"
     "--kube-apiserver-arg=\"token-auth-file=/etc/rancher/k3s/token-auth-file.csv\""
     "--datastore-endpoint=http://localhost:2379"
   ];

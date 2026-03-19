@@ -2,21 +2,19 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-apps-metallb
+  name: cluster-apps-cilium
   namespace: flux-system
 spec:
-  dependsOn:
-  - name: cluster-apps-cilium
-  path: ./cluster/apps/networking/metallb/app
+  path: ./cluster/apps/networking/cilium/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
   healthChecks:
-  - apiVersion: helm.toolkit.fluxcd.io/v2beta1
+  - apiVersion: helm.toolkit.fluxcd.io/v2
     kind: HelmRelease
-    name: metallb
-    namespace: networking
+    name: cilium
+    namespace: kube-system
   decryption:
     provider: sops
     secretRef:
@@ -36,21 +34,16 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-apps-metallb-config
+  name: cluster-apps-cilium-config
   namespace: flux-system
 spec:
   dependsOn:
-  - name: cluster-apps-metallb
-  path: ./cluster/apps/networking/metallb/config
+  - name: cluster-apps-cilium
+  path: ./cluster/apps/networking/cilium/config
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
-  healthChecks:
-  - apiVersion: helm.toolkit.fluxcd.io/v2beta1
-    kind: HelmRelease
-    name: metallb
-    namespace: networking
   decryption:
     provider: sops
     secretRef:

@@ -26,8 +26,7 @@ spec:
         pathType: Prefix
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
-          nginx.ingress.kubernetes.io/backend-protocol: "http"
-        ingressClassName: nginx
+        ingressClassName: cilium
         hosts:
         - alertmanager.${CLUSTER_DOMAIN}
         tls:
@@ -44,8 +43,7 @@ spec:
         pathType: Prefix
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
-          nginx.ingress.kubernetes.io/backend-protocol: "http"
-        ingressClassName: nginx
+        ingressClassName: cilium
         hosts:
         - prometheus.${CLUSTER_DOMAIN}
         tls:
@@ -93,4 +91,4 @@ spec:
       enabled: true
 
     kubeProxy:
-      enabled: true
+      enabled: false  # Disabled - using Cilium kube-proxy replacement

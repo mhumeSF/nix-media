@@ -103,7 +103,7 @@
 
     networks."20-internal" = {
       matchConfig.Name = "internal";
-      address = [ "10.99.0.1/24" ];
+      address = [ "10.0.200.1/24" ];
       networkConfig = {
         IPv4Forwarding = true;
       };
@@ -115,9 +115,9 @@
     settings = {
       interface = "internal";
       bind-interfaces = true;
-      dhcp-range = "10.99.0.100,10.99.0.200,24h";
+      dhcp-range = "10.0.200.100,10.0.200.199,24h";
       dhcp-option = [
-        "option:router,10.99.0.1"
+        "option:router,10.0.200.1"
         "option:dns-server,1.1.1.1,1.0.0.1"
       ];
     };

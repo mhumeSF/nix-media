@@ -46,10 +46,9 @@ spec:
     ingress:
       main:
         enabled: true
-        className: nginx
+        className: cilium
         annotations:
           cert-manager.io/cluster-issuer: letsencrypt-prod
-          nginx.ingress.kubernetes.io/backend-protocol: "http"
         hosts:
         - host: plex.${CLUSTER_DOMAIN}
           paths:

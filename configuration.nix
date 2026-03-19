@@ -83,7 +83,7 @@
 
     networks."10-virbr-internal" = {
       matchConfig.Name = "virbr-internal";
-      address = [ "10.99.0.254/24" ];
+      address = [ "10.0.200.254/24" ];
       networkConfig.ConfigureWithoutCarrier = true;
     };
 
