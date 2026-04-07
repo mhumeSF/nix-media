@@ -25,7 +25,7 @@ spec:
         enabled: true
         pathType: Prefix
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
+          cert-manager.io/cluster-issuer: internal-ca
         ingressClassName: cilium
         hosts:
         - alertmanager.${CLUSTER_DOMAIN}
@@ -42,7 +42,7 @@ spec:
         enabled: true
         pathType: Prefix
         annotations:
-          cert-manager.io/cluster-issuer: letsencrypt-prod
+          cert-manager.io/cluster-issuer: internal-ca
         ingressClassName: cilium
         hosts:
         - prometheus.${CLUSTER_DOMAIN}

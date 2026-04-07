@@ -43,7 +43,7 @@ spec:
       enabled: true
       ingressClassName: cilium
       annotations:
-        cert-manager.io/cluster-issuer: letsencrypt-prod
+        cert-manager.io/cluster-issuer: internal-ca
       hosts:
       - grafana.${CLUSTER_DOMAIN}
       path: /
