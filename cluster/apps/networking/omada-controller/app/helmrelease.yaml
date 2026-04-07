@@ -1,0 +1,108 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: omada-controller
+  namespace: networking
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: app-template
+      version: 3.7.3
+      sourceRef:
+        kind: HelmRepository
+        name: bjw-s
+        namespace: flux-system
+  maxHistory: 2
+  values:
+    controllers:
+      omada-controller:
+        containers:
+          app:
+            image:
+              repository: mbentley/omada-controller
+              tag: 5.14
+            env:
+              TZ: America/New_York
+              MANAGE_HTTP_PORT: "8088"
+              MANAGE_HTTPS_PORT: "8043"
+              PORTAL_HTTP_PORT: "8880"
+              PORTAL_HTTPS_PORT: "8843"
+              SHOW_SERVER_LOGS: "true"
+              SHOW_MONGODB_LOGS: "false"
+    service:
+      app:
+        controller: omada-controller
+        type: LoadBalancer
+        loadBalancerIP: "${OMADA_CONTROLLER}"
+        externalTrafficPolicy: Local
+        ports:
+          mgmt-http:
+            port: 8088
+            protocol: TCP
+          mgmt-https:
+            port: 8043
+            protocol: TCP
+          portal-http:
+            port: 8880
+            protocol: TCP
+          portal-https:
+            port: 8843
+            protocol: TCP
+          eap-discovery:
+            port: 29810
+            protocol: UDP
+          eap-adopt:
+            port: 29811
+            protocol: TCP
+          eap-upgrade:
+            port: 29812
+            protocol: TCP
+          eap-adopt-v2:
+            port: 29813
+            protocol: TCP
+          eap-transfer-v2:
+            port: 29814
+            protocol: TCP
+          init-check:
+            port: 27001
+            protocol: UDP
+          db-access:
+            port: 27002
+            protocol: TCP
+    ingress:
+      main:
+        enabled: true
+        className: cilium
+        annotations:
+          cert-manager.io/cluster-issuer: internal-ca
+          nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+          nginx.ingress.kubernetes.io/proxy-ssl-verify: "off"
+          nginx.ingress.kubernetes.io/upstream-vhost: "omada.${CLUSTER_DOMAIN}"
+        hosts:
+        - host: omada.${CLUSTER_DOMAIN}
+          paths:
+          - path: /
+            service:
+              identifier: app
+              port: mgmt-https
+        tls:
+        - secretName: omada-tls
+          hosts:
+          - omada.${CLUSTER_DOMAIN}
+    persistence:
+      data:
+        enabled: true
+        hostPath: /omada/data
+        type: hostPath
+        globalMounts:
+        - path: /opt/tplink/EAPController/data
+          readOnly: false
+      logs:
+        enabled: true
+        hostPath: /omada/logs
+        type: hostPath
+        globalMounts:
+        - path: /opt/tplink/EAPController/logs
+          readOnly: false

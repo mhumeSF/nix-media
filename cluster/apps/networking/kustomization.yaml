@@ -6,3 +6,4 @@ resources:
 - cilium/ks.yaml
 - k8s-gateway/ks.yaml
 - blocky/ks.yaml
+- omada-controller/ks.yaml
