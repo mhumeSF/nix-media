@@ -48,11 +48,11 @@
 
     links = {
       "10-lan" = {
-        matchConfig.Path = "pci-0000:05:00.0";
+        matchConfig.Path = "pci-0000:04:00.0";
         linkConfig.Name  = "lan";
       };
       "10-wifi" = {
-        matchConfig.Path = "pci-0000:06:00.0";
+        matchConfig.Path = "pci-0000:05:00.0";
         linkConfig.Name  = "wifi";
       };
     };
@@ -73,7 +73,7 @@
 
     wait-online.ignoredInterfaces = [ "wifi" "vm-internal" "vm-sandbox" "virbr-internal" ];
 
-    # Bridge for internal VM network (router <-> sandbox)
+    # Bridge for internal VM network (vmrouter <-> sandbox)
     netdevs."10-virbr-internal" = {
       netdevConfig = {
         Kind = "bridge";
@@ -83,7 +83,7 @@
 
     networks."10-virbr-internal" = {
       matchConfig.Name = "virbr-internal";
-      address = [ "10.0.200.254/24" ];
+      address = [ "10.0.100.254/24" ];
       networkConfig.ConfigureWithoutCarrier = true;
     };
 

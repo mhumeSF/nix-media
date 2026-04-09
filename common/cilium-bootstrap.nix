@@ -1,28 +1,25 @@
 { pkgs, ... }: {
   environment.systemPackages = with pkgs; [ kubernetes-helm ];
 
-  # Bootstrap Cilium CNI after k3s starts (solves chicken-and-egg problem)
+  # Bootstrap Cilium CNI after boot without holding up the boot transaction.
+  # A timer retries until the API is up and Cilium is installed.
   systemd.services.cilium-bootstrap = {
     description = "Bootstrap Cilium CNI for k3s";
-    wantedBy = [ "multi-user.target" ];
-    wants = [ "k3s.service" ];
-    after = [ "k3s.service" ];
     path = with pkgs; [ kubernetes-helm kubectl jq coreutils ];
     environment = {
       KUBECONFIG = "/etc/rancher/k3s/k3s.yaml";
     };
     serviceConfig = {
       Type = "oneshot";
-      RemainAfterExit = true;
     };
     script = ''
       set -euo pipefail
 
-      # Wait for k3s API to be ready
-      echo "Waiting for k3s API server..."
-      until kubectl get nodes &>/dev/null; do
-        sleep 5
-      done
+      # Skip this run until the API is reachable. The timer will retry.
+      if ! kubectl get nodes &>/dev/null; then
+        echo "k3s API not ready yet, skipping bootstrap run"
+        exit 0
+      fi
 
       # Check if Cilium is already installed
       if helm status cilium -n kube-system &>/dev/null; then
@@ -56,5 +53,15 @@
 
       echo "Cilium bootstrap complete"
     '';
+  };
+
+  systemd.timers.cilium-bootstrap = {
+    description = "Retry Cilium bootstrap for k3s";
+    wantedBy = [ "timers.target" ];
+    timerConfig = {
+      OnBootSec = "30s";
+      OnUnitActiveSec = "2m";
+      Unit = "cilium-bootstrap.service";
+    };
   };
 }

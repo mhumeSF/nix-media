@@ -24,40 +24,12 @@ in {
     agenix.nixosModules.default
   ];
 
-  boot.initrd.kernelModules = [ "amdgpu" ];
-
   microvm = {
 
     # CLOUD-HYPERVISOR
 
     hypervisor = "cloud-hypervisor";
-
-    kernelParams = [
-      "pcie_acs_override=downstream,multifunction"
-    ];
-
-    devices = [
-      {
-        bus = "pci";
-        path = "0000:06:00.0";
-      }
-      {
-        bus = "pci";
-        path = "0000:06:00.1";
-      }
-      {
-        bus = "pci";
-        path = "0000:06:00.2";
-      }
-      {
-        bus = "pci";
-        path = "0000:06:00.3";
-      }
-      {
-        bus = "pci";
-        path = "0000:06:00.4";
-      }
-    ];
+    vsock.cid = 3;
 
     vcpu = 8;
     mem = 16000;
@@ -131,8 +103,14 @@ in {
   systemd.network = {
     enable = true;
 
+    # Rename interface by MAC address (cloud-hypervisor creates enp0sX names)
+    links."10-bridge" = {
+      matchConfig.MACAddress = "02:00:00:00:01:01";
+      linkConfig.Name = "bridge";
+    };
+
     networks."20-lan" = {
-      matchConfig.name = "bridge";
+      matchConfig.Name = "bridge";
       networkConfig = {
         DHCP = "yes";
       };

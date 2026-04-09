@@ -40,7 +40,7 @@
         microvm.nixosModules.host
         {
           microvm.autostart = [
-            "router"
+            "vmrouter"
             "k3s"
             "sandbox"
           ];
@@ -48,10 +48,10 @@
 
         {
           microvm.vms = {
-            router = {
+            vmrouter = {
               pkgs = import nixpkgs { system = "x86_64-linux"; };
               specialArgs = { inherit agenix; };
-              config = import ./vms/router.nix;
+              config = import ./vms/vmrouter.nix;
             };
             k3s = {
               pkgs = import nixpkgs { system = "x86_64-linux"; };
