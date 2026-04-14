@@ -70,10 +70,6 @@ in {
     "/movies".neededForBoot = true;
   };
 
-  boot.initrd.secrets = {
-    "/persist/ssh/ssh_host_ed25519_key" = "/var/lib/microvms/k3s/persist/ssh/ssh_host_ed25519_key";
-  };
-
   services.openssh.hostKeys = [
     { path = "/persist/ssh/ssh_host_ed25519_key"; type = "ed25519"; }
     { path = "/persist/ssh/ssh_host_rsa_key"; type = "rsa"; bits = 4096; }
@@ -121,7 +117,10 @@ in {
     };
   };
 
-  environment.systemPackages = with pkgs; [ k3s ];
+  environment.systemPackages = with pkgs; [ k3s age ];
+
+  # agenix configuration for microvm
+  age.identityPaths = [ "/persist/ssh/ssh_host_ed25519_key" ];
 
   # etcd for k3s datastore
   services.etcd = {
@@ -167,7 +166,11 @@ in {
     path = "/var/lib/rancher/k3s/server/manifests/k8s-sops-key.yaml";
   };
 
+  # Persist k3s server state (token, certs) - agent data stays on local tmpfs
   systemd.tmpfiles.rules = [
+    "d /persist/k3s-server 0755 root root -"
+    "d /var/lib/rancher/k3s 0755 root root -"
+    "L+ /var/lib/rancher/k3s/server - - - - /persist/k3s-server"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-components.yaml - - - - ${gotk-components}"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-sync.yaml - - - - ${gotk-sync}"
   ];
