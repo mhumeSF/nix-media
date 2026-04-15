@@ -83,6 +83,7 @@ in {
     nftables.enable = true;
     firewall = {
       enable = true;
+      checkReversePath = "loose";  # Required for Cilium pod networking
       allowedTCPPorts = [
         80    # ingress http
         443   # ingress https
@@ -94,6 +95,7 @@ in {
         10250 # kubelet
       ];
       allowedUDPPorts = [
+        53    # blocky DNS
         8472  # cilium vxlan
       ];
       trustedInterfaces = [ "cilium_+" "lxc+" ];
@@ -163,7 +165,7 @@ in {
 
   age.secrets."k8s-sops-key" = {
     file = ../secrets/k8s-sops-key.age;
-    path = "/var/lib/rancher/k3s/server/manifests/k8s-sops-key.yaml";
+    path = "/run/agenix/k8s-sops-key";  # Default location, we'll symlink it
   };
 
   # Persist k3s server state (token, certs) - agent data stays on local tmpfs
@@ -173,5 +175,6 @@ in {
     "L+ /var/lib/rancher/k3s/server - - - - /persist/k3s-server"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-components.yaml - - - - ${gotk-components}"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-sync.yaml - - - - ${gotk-sync}"
+    "L+ /var/lib/rancher/k3s/server/manifests/k8s-sops-key.yaml - - - - /run/agenix/k8s-sops-key"
   ];
 }

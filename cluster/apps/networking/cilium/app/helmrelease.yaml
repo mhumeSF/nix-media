@@ -37,6 +37,10 @@ spec:
       loadbalancerMode: shared
       enforceHttps: true
 
+    # Gateway API
+    gatewayAPI:
+      enabled: true
+
     # Hubble observability
     hubble:
       enabled: true
