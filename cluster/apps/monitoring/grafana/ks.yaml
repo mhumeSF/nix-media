@@ -8,6 +8,7 @@ spec:
   dependsOn:
   - name: cluster-apps-cert-manager
   - name: cluster-apps-kube-prometheus-stack
+  - name: cluster-apps-gateway-api
   path: ./cluster/apps/monitoring/grafana/app
   prune: true
   sourceRef:
