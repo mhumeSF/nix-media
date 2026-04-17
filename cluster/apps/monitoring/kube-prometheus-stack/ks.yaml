@@ -5,6 +5,8 @@ metadata:
   name: cluster-apps-kube-prometheus-stack
   namespace: flux-system
 spec:
+  dependsOn:
+  - name: cluster-apps-gateway-api
   path: ./cluster/apps/monitoring/kube-prometheus-stack/app
   prune: true
   sourceRef:

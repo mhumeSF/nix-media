@@ -22,34 +22,14 @@ spec:
     alertmanager:
       enabled: true
       ingress:
-        enabled: true
-        pathType: Prefix
-        annotations:
-          cert-manager.io/cluster-issuer: internal-ca
-        ingressClassName: cilium
-        hosts:
-        - alertmanager.${CLUSTER_DOMAIN}
-        tls:
-        - secretName: alertmanager-tls
-          hosts:
-          - alertmanager.${CLUSTER_DOMAIN}
+        enabled: false
 
     grafana:
       enabled: false
 
     prometheus:
       ingress:
-        enabled: true
-        pathType: Prefix
-        annotations:
-          cert-manager.io/cluster-issuer: internal-ca
-        ingressClassName: cilium
-        hosts:
-        - prometheus.${CLUSTER_DOMAIN}
-        tls:
-        - secretName: prometheus-tls
-          hosts:
-          - prometheus.${CLUSTER_DOMAIN}
+        enabled: false
       prometheusSpec:
         ruleSelector: {}
         ruleNamespaceSelector: {}
