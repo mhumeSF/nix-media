@@ -40,17 +40,7 @@ spec:
     persistence:
       enabled: false
     ingress:
-      enabled: true
-      ingressClassName: cilium
-      annotations:
-        cert-manager.io/cluster-issuer: internal-ca
-      hosts:
-      - grafana.${CLUSTER_DOMAIN}
-      path: /
-      tls:
-      - secretName: grafana-tls
-        hosts:
-        - grafana.${CLUSTER_DOMAIN}
+      enabled: false
     sidecar:
       dashboards:
         enabled: true

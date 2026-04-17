@@ -4,3 +4,4 @@ kind: Kustomization
 namespace: kube-system
 resources:
 - lb-pool.yaml
+- bgp.yaml

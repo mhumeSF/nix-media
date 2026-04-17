@@ -45,21 +45,7 @@ spec:
         externalTrafficPolicy: Local
     ingress:
       main:
-        enabled: true
-        className: cilium
-        annotations:
-          cert-manager.io/cluster-issuer: internal-ca
-        hosts:
-        - host: plex.${CLUSTER_DOMAIN}
-          paths:
-          - path: /
-            service:
-              name: plex
-              port: 32400
-        tls:
-        - secretName: plex-tls
-          hosts:
-          - plex.${CLUSTER_DOMAIN}
+        enabled: false
     persistence:
       tmp:
         enabled: true
