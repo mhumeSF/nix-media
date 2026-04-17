@@ -7,6 +7,7 @@ metadata:
 spec:
   dependsOn:
   - name: cluster-apps-cilium
+  - name: cluster-apps-cert-manager
   path: ./cluster/apps/networking/gateway-api/app
   prune: true
   sourceRef:
@@ -15,3 +16,11 @@ spec:
   interval: 30m
   retryInterval: 1m
   timeout: 5m
+  postBuild:
+    substituteFrom:
+    - kind: ConfigMap
+      name: cluster-settings
+      optional: false
+    - kind: Secret
+      name: cluster-secrets
+      optional: false
