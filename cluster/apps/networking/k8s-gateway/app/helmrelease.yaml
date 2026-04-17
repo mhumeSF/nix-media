@@ -18,6 +18,10 @@ spec:
   maxHistory: 3
   values:
     domain: ${CLUSTER_DOMAIN}
+    # Watch Gateway API HTTPRoutes for DNS records
+    watchedResources:
+      - Ingress
+      - HTTPRoute
     service:
       type: LoadBalancer
       loadBalancerIP: "${K8S_GATEWAY}"

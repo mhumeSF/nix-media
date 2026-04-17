@@ -30,16 +30,23 @@ spec:
     externalIPs:
       enabled: true
 
-    # Ingress Controller (replaces ingress-nginx)
-    ingressController:
+    # BGP Control Plane
+    bgpControlPlane:
       enabled: true
-      default: true
-      loadbalancerMode: shared
-      enforceHttps: true
 
-    # Gateway API
+    # Gateway API (replaces Ingress Controller)
+    # NOTE: L7 proxy has connectivity issues with vxlan tunnel mode
+    # See: https://github.com/cilium/cilium/issues
     gatewayAPI:
       enabled: true
+
+    # Socket LB for service redirection
+    socketLB:
+      enabled: true
+
+    # Disable legacy Ingress Controller (using Gateway API instead)
+    ingressController:
+      enabled: false
 
     # Hubble observability
     hubble:
