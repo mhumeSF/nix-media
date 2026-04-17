@@ -1,0 +1,14 @@
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-cert
+  namespace: networking
+spec:
+  secretName: wildcard-cert
+  issuerRef:
+    name: internal-ca
+    kind: ClusterIssuer
+  dnsNames:
+  - "${CLUSTER_DOMAIN}"
+  - "*.${CLUSTER_DOMAIN}"
