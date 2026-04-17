@@ -4,3 +4,5 @@ kind: Kustomization
 resources:
 - crds.yaml
 - gateway.yaml
+- certificate.yaml
+- referencegrant.yaml
