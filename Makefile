@@ -1,6 +1,8 @@
 # Variables
 CONFIG_NAME = media
 # HOST_IP ?= # export(HOST_IP)
+REMOTE_USER ?= nixie
+REMOTE_SUDO_FLAGS ?= --sudo --no-reexec
 
 .PHONY: setup
 setup:
@@ -8,12 +10,11 @@ setup:
 
 .PHONY: all
 all:
-		nixos-rebuild switch \
-			--fast \
+	nixos-rebuild switch \
 			--flake .#$(CONFIG_NAME) \
-			--use-remote-sudo \
-			--target-host nixie@$(HOST_IP) \
-			--build-host nixie@$(HOST_IP) \
+			$(REMOTE_SUDO_FLAGS) \
+			--target-host $(REMOTE_USER)@$(HOST_IP) \
+			--build-host $(REMOTE_USER)@$(HOST_IP) \
 			--show-trace \
 			--verbose \
 			--cores 16 \
