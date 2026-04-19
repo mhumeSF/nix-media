@@ -1,6 +1,6 @@
 # Variables
 CONFIG_NAME = media
-# HOST_IP ?= # export(HOST_IP)
+HOST_IP ?= media.local
 REMOTE_USER ?= nixie
 REMOTE_SUDO_FLAGS ?= --sudo --no-reexec
 
