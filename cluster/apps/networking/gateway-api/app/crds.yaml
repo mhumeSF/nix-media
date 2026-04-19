@@ -1,15 +1,15 @@
 ---
-# Gateway API Standard CRDs v1.2.0
+# Gateway API Standard CRDs from the official upstream repository.
 apiVersion: source.toolkit.fluxcd.io/v1
-kind: OCIRepository
+kind: GitRepository
 metadata:
   name: gateway-api
   namespace: flux-system
 spec:
   interval: 12h
-  url: oci://ghcr.io/fluxcd/gateway-api-manifests
+  url: https://github.com/kubernetes-sigs/gateway-api
   ref:
-    tag: v1.2.0
+    tag: v1.5.1
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
@@ -20,6 +20,6 @@ spec:
   interval: 1h
   prune: false
   sourceRef:
-    kind: OCIRepository
+    kind: GitRepository
     name: gateway-api
-  path: ./standard
+  path: ./config/crd/standard
