@@ -12,7 +12,7 @@ spec:
     spec:
       # renovate: registryUrl=oci://registry-1.docker.io/envoyproxy
       chart: gateway-helm
-      version: v1.3.3
+      version: 1.7.2
       sourceRef:
         kind: HelmRepository
         name: envoyproxy
