@@ -32,7 +32,6 @@
     pciutils
     iptables
     wget
-    zfs
     k3s
     lm_sensors
   ];
@@ -48,4 +47,3 @@
 
   system.stateVersion = "23.11";
 }
-

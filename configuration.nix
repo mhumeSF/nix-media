@@ -1,6 +1,7 @@
 {
   self,
   pkgs,
+  unstable,
   ...
 }: {
   imports = [
@@ -11,12 +12,19 @@
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
   nix.settings.trusted-users = [ "nixie" "root" ];
+  # Precarious compatibility pin: the host currently needs OpenZFS 2.4.x from
+  # unstable plus a 6.19 kernel so the microvm/virtiofs overlayfs workflow keeps
+  # working. nixpkgs marks this ZFS package broken, so evaluation must allow it.
+  nixpkgs.config.allowBroken = true;
 
   boot.loader.systemd-boot.enable = true;
+  boot.kernelPackages = pkgs.linuxPackages_6_19;
   boot.kernel.sysctl."net.ipv4.conf.all.forwarding" = 1;
 
   boot.supportedFilesystems = [ "zfs" ];
+  boot.zfs.package = unstable.zfs;
   boot.zfs.forceImportRoot = false;
+  environment.systemPackages = [ unstable.zfs ];
   networking.hostId = "2518ac65";
 
   networking = {
