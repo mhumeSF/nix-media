@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-apps-cilium
+  name: cilium
   namespace: flux-system
 spec:
   path: ./cluster/apps/networking/cilium/app
@@ -24,17 +24,17 @@ spec:
   timeout: 5m
   postBuild:
     substituteFrom:
-    - kind: ConfigMap
-      name: cluster-settings
-      optional: false
     - kind: Secret
       name: cluster-secrets
+      optional: false
+    - kind: ConfigMap
+      name: cluster-settings
       optional: false
 ---
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-apps-cilium-config
+  name: cilium-config
   namespace: flux-system
 spec:
   path: ./cluster/apps/networking/cilium/config
@@ -51,9 +51,9 @@ spec:
   timeout: 5m
   postBuild:
     substituteFrom:
-    - kind: ConfigMap
-      name: cluster-settings
-      optional: false
     - kind: Secret
       name: cluster-secrets
+      optional: false
+    - kind: ConfigMap
+      name: cluster-settings
       optional: false

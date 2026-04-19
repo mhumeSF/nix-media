@@ -2,7 +2,7 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-apps-gateway-api
+  name: gateway-api
   namespace: flux-system
 spec:
   path: ./cluster/apps/networking/gateway-api/app
@@ -17,12 +17,12 @@ spec:
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-apps-gateway-api-resources
+  name: gateway-api-resources
   namespace: flux-system
 spec:
   dependsOn:
-  - name: cluster-apps-gateway-api
-  - name: cluster-apps-cilium
+  - name: gateway-api
+  - name: cilium
   path: ./cluster/apps/networking/gateway-api/resources
   prune: true
   sourceRef:
