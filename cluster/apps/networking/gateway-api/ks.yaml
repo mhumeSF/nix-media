@@ -23,6 +23,7 @@ spec:
   dependsOn:
   - name: gateway-api
   - name: cilium
+  - name: envoy-gateway
   path: ./cluster/apps/networking/gateway-api/resources
   prune: true
   sourceRef:
@@ -31,3 +32,11 @@ spec:
   interval: 30m
   retryInterval: 1m
   timeout: 5m
+  postBuild:
+    substituteFrom:
+    - kind: Secret
+      name: cluster-secrets
+      optional: false
+    - kind: ConfigMap
+      name: cluster-settings
+      optional: false

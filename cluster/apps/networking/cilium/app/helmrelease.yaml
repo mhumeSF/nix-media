@@ -34,10 +34,6 @@ spec:
     bgpControlPlane:
       enabled: true
 
-    # Gateway API
-    gatewayAPI:
-      enabled: true
-
     # Hubble observability
     hubble:
       enabled: true
