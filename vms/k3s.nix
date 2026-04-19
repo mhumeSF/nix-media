@@ -29,6 +29,7 @@ in {
     # CLOUD-HYPERVISOR
 
     hypervisor = "cloud-hypervisor";
+    cloud-hypervisor.package = unstable.cloud-hypervisor;
     vsock.cid = 3;
 
     vcpu = 8;
@@ -128,7 +129,6 @@ in {
   services.etcd = {
     enable = true;
     package = unstable.etcd;
-    dataDir = "/persist/etcd";
   };
 
   systemd.services.etcd = {
@@ -168,11 +168,11 @@ in {
     path = "/run/agenix/k8s-sops-key";  # Default location, we'll symlink it
   };
 
-  # Persist k3s server state (token, certs) - agent data stays on local tmpfs
+  # Intentionally keep the control plane disposable. Flux bootstrap manifests are
+  # recreated on each boot, while shared host paths under /persist survive.
   systemd.tmpfiles.rules = [
-    "d /persist/k3s-server 0755 root root -"
-    "d /var/lib/rancher/k3s 0755 root root -"
-    "L+ /var/lib/rancher/k3s/server - - - - /persist/k3s-server"
+    "d /var/lib/rancher/k3s/server 0755 root root -"
+    "d /var/lib/rancher/k3s/server/manifests 0755 root root -"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-components.yaml - - - - ${gotk-components}"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-sync.yaml - - - - ${gotk-sync}"
     "L+ /var/lib/rancher/k3s/server/manifests/k8s-sops-key.yaml - - - - /run/agenix/k8s-sops-key"

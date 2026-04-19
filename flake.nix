@@ -2,7 +2,7 @@
   description = "A simple NixOS flake";
 
   inputs = {
-    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.05";
+    nixpkgs.url = "github:NixOS/nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "github:NixOS/nixpkgs/nixos-unstable";
 
     microvm.url = "github:astro/microvm.nix";
@@ -63,7 +63,10 @@
             };
             sandbox = {
               pkgs = import nixpkgs { system = "x86_64-linux"; };
-              specialArgs = { inherit agenix; };
+              specialArgs = {
+                inherit agenix;
+                unstable = import nixpkgs-unstable { system = "x86_64-linux"; };
+              };
               config = import ./vms/sandbox.nix;
             };
           };
