@@ -25,9 +25,9 @@ spec:
         clusterPoolIPv4PodCIDRList: "10.42.0.0/16"
 
     # LB-IPAM (replaces MetalLB)
-    l2announcements:
-      enabled: true
     externalIPs:
+      enabled: true
+    bgpControlPlane:
       enabled: true
 
     # Gateway API

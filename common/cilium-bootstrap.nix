@@ -32,19 +32,16 @@
       helm repo update cilium
 
       helm upgrade --install cilium cilium/cilium \
-        --version 1.16.6 \
+        --version 1.19.2 \
         --namespace kube-system \
         --set kubeProxyReplacement=true \
         --set k8sServiceHost=localhost \
         --set k8sServicePort=6443 \
         --set ipam.mode=kubernetes \
         --set ipam.operator.clusterPoolIPv4PodCIDRList="10.42.0.0/16" \
-        --set l2announcements.enabled=true \
         --set externalIPs.enabled=true \
-        --set ingressController.enabled=true \
-        --set ingressController.default=true \
-        --set ingressController.loadbalancerMode=shared \
-        --set ingressController.enforceHttps=true \
+        --set bgpControlPlane.enabled=true \
+        --set gatewayAPI.enabled=true \
         --set hubble.enabled=true \
         --set hubble.relay.enabled=true \
         --set hubble.ui.enabled=true \
