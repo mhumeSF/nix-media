@@ -21,13 +21,13 @@
         exit 0
       fi
 
-      # Check if Cilium is already installed
+      # Bootstrap only until Flux takes over the Helm release.
       if helm status cilium -n kube-system &>/dev/null; then
-        echo "Cilium already installed, skipping bootstrap"
+        echo "Cilium already installed, leaving upgrades to Flux"
         exit 0
       fi
 
-      echo "Installing Cilium CNI..."
+      echo "Installing Cilium CNI for initial cluster access..."
       helm repo add cilium https://helm.cilium.io/
       helm repo update cilium
 
