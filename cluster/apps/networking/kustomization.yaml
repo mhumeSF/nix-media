@@ -5,6 +5,7 @@ resources:
 - namespace.yaml
 - cilium/ks.yaml
 - gateway-api/ks.yaml
+- envoy-gateway/ks.yaml
 - k8s-gateway/ks.yaml
 - blocky/ks.yaml
 - omada-controller/ks.yaml
