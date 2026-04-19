@@ -5,6 +5,8 @@ metadata:
   name: cluster-apps-cert-manager
   namespace: flux-system
 spec:
+  components:
+  - ../../../components/secrets/cloudflare-api
   path: ./cluster/apps/cert-manager/cert-manager/app
   prune: true
   sourceRef:
