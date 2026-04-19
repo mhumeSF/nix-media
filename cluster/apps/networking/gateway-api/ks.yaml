@@ -5,8 +5,6 @@ metadata:
   name: cluster-apps-gateway-api
   namespace: flux-system
 spec:
-  dependsOn:
-  - name: cluster-apps-cilium
   path: ./cluster/apps/networking/gateway-api/app
   prune: true
   sourceRef:
