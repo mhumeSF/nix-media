@@ -3,7 +3,7 @@ let
   nixie = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFLpijNKLQTJJXToZRGjRWb2f1EgPG9IzzO85mvbjbaY nixie@router";
   users = [ nixie ];
 
-  k3s = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIfuOaDfUsaqC64WMjaaHlvYOqvFZ+y0RXw4WOnwi47o";
+  k3s = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIIGTW/UwhzlKEBxOchPK5vSU4ot9TMtaHCpKZbYA0KPj";
   media = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIDK2AolLpi/7mXhBmxoFhe4cJd1uDwPPsli1GRYq+zxm";
   systems = [ media ];
 in
