@@ -2,8 +2,8 @@
 apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
-  name: cluster-apps-k8s-gateway
-  namespace: flux-system
+  name: k8s-gateway
+  namespace: networking
 spec:
   path: ./cluster/apps/networking/k8s-gateway/app
   prune: true
