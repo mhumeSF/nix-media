@@ -1,5 +1,6 @@
 ---
-# Gateway API Standard CRDs from the official upstream repository.
+# Gateway API CRDs from the official upstream repository.
+# Cilium Gateway API integration expects TLSRoute from the experimental bundle.
 apiVersion: source.toolkit.fluxcd.io/v1
 kind: GitRepository
 metadata:
@@ -22,4 +23,4 @@ spec:
   sourceRef:
     kind: GitRepository
     name: gateway-api
-  path: ./config/crd/standard
+  path: ./config/crd/experimental
