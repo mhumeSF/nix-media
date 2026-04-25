@@ -19,16 +19,11 @@ spec:
     namespace: networking
   decryption:
     provider: sops
-    secretRef:
-      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 5m
   postBuild:
     substituteFrom:
-    - kind: Secret
-      name: cluster-secrets
-      optional: false
     - kind: ConfigMap
       name: cluster-settings
       optional: false
@@ -53,16 +48,11 @@ spec:
     namespace: networking
   decryption:
     provider: sops
-    secretRef:
-      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 5m
   postBuild:
     substituteFrom:
-    - kind: Secret
-      name: cluster-secrets
-      optional: false
     - kind: ConfigMap
       name: cluster-settings
       optional: false

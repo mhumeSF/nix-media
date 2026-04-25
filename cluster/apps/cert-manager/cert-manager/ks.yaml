@@ -12,8 +12,6 @@ spec:
     name: flux-system
   decryption:
     provider: sops
-    secretRef:
-      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 3m
@@ -33,8 +31,6 @@ spec:
     name: flux-system
   decryption:
     provider: sops
-    secretRef:
-      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 3m

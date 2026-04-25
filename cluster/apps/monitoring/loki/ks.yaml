@@ -20,9 +20,6 @@ spec:
   timeout: 3m
   postBuild:
     substituteFrom:
-    - kind: Secret
-      name: cluster-secrets
-      optional: false
     - kind: ConfigMap
       name: cluster-settings
       optional: false

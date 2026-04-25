@@ -1,0 +1,22 @@
+apiVersion: v1
+stringData:
+    PLEX_CLAIM: ENC[AES256_GCM,data:Fhgz71WljZMJ3AacBmXtKCYgqlHc+5IRRe4=,iv:eBiYb0TQUnTKIidz5fIDGR04rGMVNcah71SFZuGfx58=,tag:0bXV2fb4D4FGhnskEpyWLw==,type:str]
+kind: Secret
+metadata:
+    name: plex-vars
+    namespace: flux-system
+sops:
+    age:
+        - recipient: age1rchcs2gk3wa0h8hdsvm3enu7qa4yq9gmag9k32qsfvrgghgufq2smx4s3n
+          enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBzYkFrZ2RGY09USzVvQ1B2
+            VUZCcDlLZlpsdC9pTTVub2FVaXdobzJuRTM0CjZ6SzV2Z2NTaDFkTnkyNXl4NlNl
+            NFB4dzZyRkZwOE92OGVIZlo0M0NKL00KLS0tIHNEQzNZc2JTaXFnNm1ibk0wbzJ4
+            T2d0aFhYWmpFTElDeXVuVjhvdDBvNTgKMJGMiTbsmn2+8L42rGx7SwcwWlp0cJc4
+            cRT7n88yyiqv+So40qxFWIprtzUk31RLnS2a+5+TzCR2qs7+RTXBJw==
+            -----END AGE ENCRYPTED FILE-----
+    lastmodified: "2026-04-24T04:19:45Z"
+    mac: ENC[AES256_GCM,data:Mj2V4Ncp61nTVS5fzRVJ0U15qj+2mdZH2/EYUc2gK8XrWTmuFlFPKP3Vj8mQ8nq0keG/qkjeoPVKOVrVEbP8xYcCqjHlqAjnQKRoN76vkMpnzIIOFCP3Fc0cwOGIjmqOMMsCB4atRnGS7/U0Vfk0DB1nqC6mnFabTpWagq7iqvw=,iv:c48DAjV4KSEaCERyouy/hK1JM4UqdNds3MDaymBd/XU=,tag:pHX1SrP4D+B1EgrWjC0VZA==,type:str]
+    encrypted_regex: ^(data|stringData|acme)$
+    version: 3.12.1

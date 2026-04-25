@@ -22,15 +22,13 @@ spec:
     namespace: default
   decryption:
     provider: sops
-    secretRef:
-      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 3m
   postBuild:
     substituteFrom:
     - kind: Secret
-      name: cluster-secrets
+      name: plex-vars
       optional: false
     - kind: ConfigMap
       name: cluster-settings
