@@ -34,7 +34,6 @@ metadata:
 spec:
   dependsOn:
   - name: kube-prometheus-stack
-  - name: gateway-api
   path: ./cluster/apps/monitoring/kube-prometheus-stack/routes
   prune: true
   sourceRef:

@@ -18,6 +18,12 @@ spec:
   maxHistory: 3
   values:
     domain: ${CLUSTER_DOMAIN}
+    watchedResources:
+    - HTTPRoute
+    - Service
+    filters:
+      gatewayClasses:
+      - eg
     service:
       type: LoadBalancer
       loadBalancerIP: "${K8S_GATEWAY}"

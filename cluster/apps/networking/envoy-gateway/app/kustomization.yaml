@@ -5,3 +5,5 @@ namespace: networking
 resources:
 - helmrepository.yaml
 - helmrelease.yaml
+- gatewayclass.yaml
+- gateway.yaml

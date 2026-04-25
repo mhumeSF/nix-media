@@ -8,9 +8,9 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=oci://registry-1.docker.io/envoyproxy/gateway-helm
+      # renovate: registryUrl=oci://registry-1.docker.io/envoyproxy
       chart: gateway-helm
-      version: v1.3.3
+      version: v1.7.2
       sourceRef:
         kind: HelmRepository
         name: envoyproxy
@@ -27,3 +27,5 @@ spec:
         enabled: false
     deployment:
       replicas: 1
+    service:
+      type: ClusterIP
