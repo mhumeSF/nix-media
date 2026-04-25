@@ -25,6 +25,4 @@ spec:
       gatewayClasses:
       - eg
     service:
-      type: LoadBalancer
-      loadBalancerIP: "${K8S_GATEWAY}"
-      externalTrafficPolicy: Local
+      type: ClusterIP
