@@ -6,15 +6,10 @@ metadata:
   namespace: networking
 spec:
   interval: 5m
-  chart:
-    spec:
-      # renovate: registryUrl=oci://docker.io/envoyproxy
-      chart: gateway-helm
-      version: v1.7.2
-      sourceRef:
-        kind: HelmRepository
-        name: envoyproxy
-        namespace: networking
+  chartRef:
+    kind: OCIRepository
+    name: envoy-gateway
+    namespace: networking
   install:
     crds: CreateReplace
   upgrade:
