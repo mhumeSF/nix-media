@@ -41,7 +41,7 @@
         --set ipam.operator.clusterPoolIPv4PodCIDRList="10.42.0.0/16" \
         --set externalIPs.enabled=true \
         --set bgpControlPlane.enabled=true \
-        --set gatewayAPI.enabled=true \
+        --set gatewayAPI.enabled=false \
         --set hubble.enabled=true \
         --set hubble.relay.enabled=true \
         --set hubble.ui.enabled=true \
