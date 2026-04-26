@@ -9,7 +9,7 @@ spec:
   interval: 10m0s
   url: https://github.com/mhumesf/nix-media.git
   ref:
-    branch: dev
+    branch: main
   ignore: |
     /cluster/bootstrap
 ---
