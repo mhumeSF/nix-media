@@ -5,6 +5,9 @@ metadata:
   name: envoy-gateway
   namespace: flux-system
 spec:
+  dependsOn:
+  - name: gateway-api-crds
+  - name: envoy-gateway-crds
   path: ./cluster/apps/networking/envoy-gateway/app
   prune: true
   sourceRef:
