@@ -109,9 +109,14 @@
 
   # Microvm directories (must exist before virtiofsd starts)
   systemd.tmpfiles.rules = [
+    "d /var/lib/microvms/k3s 0755 microvm kvm -"
+    "d /var/lib/microvms/k3s/volumes 0755 microvm kvm -"
     "d /var/lib/microvms/k3s/persist 0755 root root -"
+    "d /var/lib/microvms/k3s/persist/ssh 0755 root root -"
     "d /var/lib/microvms/vmrouter/persist 0755 root root -"
+    "d /var/lib/microvms/vmrouter/persist/ssh 0755 root root -"
     "d /var/lib/microvms/sandbox/persist 0755 root root -"
+    "d /var/lib/microvms/sandbox/persist/ssh 0755 root root -"
   ];
 
 }

@@ -56,6 +56,23 @@ in {
       }
     ];
 
+    volumes = [
+      {
+        image = "/var/lib/microvms/${config.networking.hostName}/volumes/containerd.img";
+        mountPoint = "/var/lib/rancher/k3s/agent/containerd";
+        label = "k3s-containerd";
+        size = 131072;
+        fsType = "ext4";
+      }
+      {
+        image = "/var/lib/microvms/${config.networking.hostName}/volumes/storage.img";
+        mountPoint = "/var/lib/rancher/k3s/storage";
+        label = "k3s-storage";
+        size = 131072;
+        fsType = "ext4";
+      }
+    ];
+
     interfaces = [{
       type         = "macvtap";
       id           = "vm-k3s";
@@ -168,9 +185,13 @@ in {
     path = "/run/agenix/k8s-sops-key";  # Default location, we'll symlink it
   };
 
-  # Intentionally keep the control plane disposable. Flux bootstrap manifests are
-  # recreated on each boot, while shared host paths under /persist survive.
+  # Persist container images/snapshots and local-path PVC data on block-backed
+  # ext4 volumes, while keeping the rest of k3s state disposable.
   systemd.tmpfiles.rules = [
+    "d /var/lib/rancher/k3s 0755 root root -"
+    "d /var/lib/rancher/k3s/agent 0755 root root -"
+    "d /var/lib/rancher/k3s/agent/containerd 0755 root root -"
+    "d /var/lib/rancher/k3s/storage 0755 root root -"
     "d /var/lib/rancher/k3s/server 0755 root root -"
     "d /var/lib/rancher/k3s/server/manifests 0755 root root -"
     "L+ /var/lib/rancher/k3s/server/manifests/gotk-components.yaml - - - - ${gotk-components}"
