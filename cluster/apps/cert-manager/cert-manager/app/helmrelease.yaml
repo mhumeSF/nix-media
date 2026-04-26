@@ -18,6 +18,8 @@ spec:
   maxHistory: 3
   values:
     installCRDs: true
+    extraArgs:
+    - --enable-gateway-api
     podDnsConfig:
       nameservers:
       - 1.1.1.1

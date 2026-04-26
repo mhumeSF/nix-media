@@ -34,9 +34,7 @@ spec:
     service:
       app:
         controller: omada-controller
-        type: LoadBalancer
-        loadBalancerIP: "${OMADA_CONTROLLER}"
-        externalTrafficPolicy: Local
+        type: ClusterIP
         ports:
           mgmt-http:
             port: 8088

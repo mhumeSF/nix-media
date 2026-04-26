@@ -4,22 +4,29 @@ kind: Gateway
 metadata:
   name: main
   namespace: networking
+  annotations:
+    cert-manager.io/cluster-issuer: internal-ca
 spec:
-  gatewayClassName: cilium
+  gatewayClassName: eg
+  addresses:
+  - type: IPAddress
+    value: "${ENVOY_GATEWAY}"
   listeners:
   - name: http
     protocol: HTTP
     port: 80
+    hostname: "*.${CLUSTER_DOMAIN}"
     allowedRoutes:
       namespaces:
         from: All
   - name: https
     protocol: HTTPS
     port: 443
+    hostname: "*.${CLUSTER_DOMAIN}"
     tls:
       mode: Terminate
       certificateRefs:
-      - name: wildcard-cert
+      - name: wildcard-tls
     allowedRoutes:
       namespaces:
         from: All

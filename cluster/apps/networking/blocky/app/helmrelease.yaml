@@ -52,7 +52,7 @@ spec:
           - 1.0.0.1
       conditional:
         mapping:
-          ${CLUSTER_DOMAIN}: ${K8S_GATEWAY}
+          ${CLUSTER_DOMAIN}: k8s-gateway.networking.svc.cluster.local
       blocking:
         blackLists:
           ads:

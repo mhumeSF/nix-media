@@ -3,13 +3,14 @@ apiVersion: kustomize.toolkit.fluxcd.io/v1
 kind: Kustomization
 metadata:
   name: k8s-gateway
-  namespace: flux-system
+  namespace: networking
 spec:
   path: ./cluster/apps/networking/k8s-gateway/app
   prune: true
   sourceRef:
     kind: GitRepository
     name: flux-system
+    namespace: flux-system
   healthChecks:
   - apiVersion: helm.toolkit.fluxcd.io/v2beta1
     kind: HelmRelease
@@ -17,16 +18,11 @@ spec:
     namespace: networking
   decryption:
     provider: sops
-    secretRef:
-      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 3m
   postBuild:
     substituteFrom:
-    - kind: Secret
-      name: cluster-secrets
-      optional: false
     - kind: ConfigMap
       name: cluster-settings
       optional: false

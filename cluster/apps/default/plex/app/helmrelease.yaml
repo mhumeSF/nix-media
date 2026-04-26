@@ -30,7 +30,7 @@ spec:
               PLEX_CLAIM: ${PLEX_CLAIM}
               PLEX_UID: "1000"
               PLEX_GID: "100"
-              PLEX_ADVERTISE_URL: "https://plex.${CLUSTER_DOMAIN},http://{PLEX}:32400"
+              PLEX_ADVERTISE_URL: "https://plex.${CLUSTER_DOMAIN}"
             securityContext:
               privileged: true
     service:
@@ -40,9 +40,7 @@ spec:
         ports:
           http:
             port: 32400
-        type: LoadBalancer
-        loadBalancerIP: "${PLEX}"
-        externalTrafficPolicy: Local
+        type: ClusterIP
     ingress:
       main:
         enabled: false

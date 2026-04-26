@@ -5,5 +5,6 @@ metadata:
   name: cluster-settings
   namespace: flux-system
 data:
-  CLUSTER_DOMAIN: internal
-  K8S_GATEWAY: 10.0.200.201
+  CLUSTER_DOMAIN: lab.internal
+  ENVOY_GATEWAY: 10.0.201.200
+  BLOCKY: 10.0.201.201
