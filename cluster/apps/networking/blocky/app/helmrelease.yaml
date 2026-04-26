@@ -38,6 +38,8 @@ spec:
             targetPort: 53
     controller:
       replicas: 1
+    podAnnotations:
+      checksum/config: "8e95f02f65a97912031c2bfbc23aeb6a90a7e6a3c75dfa5f26770f42d01b09c8"
     metrics:
       enabled: false
       serviceMonitor:
