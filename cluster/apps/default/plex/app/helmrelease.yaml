@@ -40,7 +40,9 @@ spec:
         ports:
           http:
             port: 32400
-        type: ClusterIP
+        type: LoadBalancer
+        loadBalancerIP: "${PLEX}"
+        externalTrafficPolicy: Local
     ingress:
       main:
         enabled: false
