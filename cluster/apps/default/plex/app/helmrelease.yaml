@@ -30,7 +30,7 @@ spec:
               PLEX_CLAIM: ${PLEX_CLAIM}
               PLEX_UID: "1000"
               PLEX_GID: "100"
-              PLEX_ADVERTISE_URL: "https://plex.${CLUSTER_DOMAIN}"
+              PLEX_ADVERTISE_URL: "http://${PLEX}:32400"
             securityContext:
               privileged: true
     service:

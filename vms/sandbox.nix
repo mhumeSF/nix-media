@@ -56,6 +56,19 @@
     enableIPv6  = false;
   };
 
+  services.timesyncd.enable = false;
+  services.chrony = {
+    enable = true;
+    enableNTS = true;
+    servers = [
+      "time1.google.com"
+      "time2.google.com"
+      "time3.google.com"
+      "time4.google.com"
+      "time.nist.gov"
+    ];
+  };
+
   systemd.network = {
     enable = true;
 
