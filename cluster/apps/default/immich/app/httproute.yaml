@@ -1,0 +1,16 @@
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: immich
+  namespace: default
+spec:
+  parentRefs:
+  - name: main
+    namespace: networking
+  hostnames:
+  - immich.${CLUSTER_DOMAIN}
+  rules:
+  - backendRefs:
+    - name: immich-server
+      port: 2283

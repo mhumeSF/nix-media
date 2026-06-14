@@ -1,0 +1,57 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: immich
+  namespace: default
+spec:
+  interval: 5m
+  chart:
+    spec:
+      chart: immich
+      version: 0.12.0
+      sourceRef:
+        kind: HelmRepository
+        name: immich
+        namespace: flux-system
+  maxHistory: 3
+  values:
+    env:
+      TZ: America/New_York
+
+    immich:
+      persistence:
+        library:
+          existingClaim: immich-library-pvc
+
+    server:
+      enabled: true
+      image:
+        repository: ghcr.io/immich-app/immich-server
+        tag: v2.6.3
+
+    machine-learning:
+      enabled: true
+      image:
+        repository: ghcr.io/immich-app/immich-machine-learning
+        tag: v2.6.3
+      persistence:
+        cache:
+          enabled: true
+          type: emptyDir
+
+    postgresql:
+      enabled: true
+      auth:
+        username: immich
+        database: immich
+      primary:
+        persistence:
+          enabled: true
+          size: 8Gi
+
+    redis:
+      enabled: true
+      architecture: standalone
+      auth:
+        enabled: false
