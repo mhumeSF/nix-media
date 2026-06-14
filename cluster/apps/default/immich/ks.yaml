@@ -7,7 +7,6 @@ metadata:
 spec:
   dependsOn:
   - name: rclone
-  - name: cloudnative-pg
   - name: local-path-provisioner
   path: ./cluster/apps/default/immich/app
   prune: true

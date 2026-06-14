@@ -1,27 +1,98 @@
 ---
-apiVersion: postgresql.cnpg.io/v1
-kind: Cluster
+apiVersion: v1
+kind: Secret
+metadata:
+  name: immich-postgres-app
+  namespace: default
+type: Opaque
+stringData:
+  username: immich
+  password: immich
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: immich-postgres-pvc
+  namespace: default
+spec:
+  accessModes:
+  - ReadWriteOnce
+  storageClassName: local-path
+  resources:
+    requests:
+      storage: 10Gi
+---
+apiVersion: apps/v1
+kind: Deployment
 metadata:
   name: immich-postgres
   namespace: default
 spec:
-  instances: 1
-  imageName: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
-  primaryUpdateStrategy: unsupervised
-  storage:
-    size: 10Gi
-    storageClass: local-path
-  postgresql:
-    shared_preload_libraries:
-    - vectors.so
-    - vchord.so
-  bootstrap:
-    initdb:
-      database: immich
-      owner: immich
-      postInitSQL:
-      - CREATE EXTENSION IF NOT EXISTS vectors;
-      - CREATE EXTENSION IF NOT EXISTS vchord CASCADE;
-      - CREATE EXTENSION IF NOT EXISTS earthdistance CASCADE;
-      - ALTER SCHEMA vectors OWNER TO immich;
-      - GRANT ALL ON SCHEMA vectors TO immich;
+  replicas: 1
+  strategy:
+    type: Recreate
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: immich-postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: immich-postgres
+    spec:
+      containers:
+      - name: postgres
+        image: ghcr.io/immich-app/postgres:14-vectorchord0.4.3-pgvectors0.2.0
+        env:
+        - name: POSTGRES_USER
+          value: immich
+        - name: POSTGRES_PASSWORD
+          value: immich
+        - name: POSTGRES_DB
+          value: immich
+        - name: POSTGRES_INITDB_ARGS
+          value: "--data-checksums"
+        ports:
+        - containerPort: 5432
+          name: postgres
+        volumeMounts:
+        - name: data
+          mountPath: /var/lib/postgresql/data
+        resources:
+          requests:
+            memory: 256Mi
+            cpu: 100m
+          limits:
+            memory: 2Gi
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - immich
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - immich
+          initialDelaySeconds: 5
+          periodSeconds: 5
+      volumes:
+      - name: data
+        persistentVolumeClaim:
+          claimName: immich-postgres-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: immich-postgres-rw
+  namespace: default
+spec:
+  selector:
+    app.kubernetes.io/name: immich-postgres
+  ports:
+  - port: 5432
+    targetPort: 5432
+    name: postgres
