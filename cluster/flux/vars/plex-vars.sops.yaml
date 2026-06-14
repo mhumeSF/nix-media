@@ -1,14 +1,13 @@
 apiVersion: v1
 stringData:
-    PLEX_CLAIM: ENC[AES256_GCM,data:H6/HEzNq5OKQyHRkhpIpsoL0/CN5Q8tafWA=,iv:lo6L89aFyRq/y45ahAfKMdPx5BtTnSULZyNiXMVRpjU=,tag:Upk4i9NDwuMKYZvi8fKbkQ==,type:str]
+    PLEX_CLAIM: ENC[AES256_GCM,data:7xCABhzEKkSaVxfCwWDDVl0Pw/haVwSRwnw=,iv:INfVO7NeTQrHrGvsAdcOPWL+B4Lbq9tEKH5Box0azr4=,tag:Hv7xdxqr8nYF3B9k3aS6hg==,type:str]
 kind: Secret
 metadata:
     name: plex-vars
     namespace: flux-system
 sops:
     age:
-        - recipient: age1rchcs2gk3wa0h8hdsvm3enu7qa4yq9gmag9k32qsfvrgghgufq2smx4s3n
-          enc: |
+        - enc: |
             -----BEGIN AGE ENCRYPTED FILE-----
             YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSBzYkFrZ2RGY09USzVvQ1B2
             VUZCcDlLZlpsdC9pTTVub2FVaXdobzJuRTM0CjZ6SzV2Z2NTaDFkTnkyNXl4NlNl
@@ -16,7 +15,8 @@ sops:
             T2d0aFhYWmpFTElDeXVuVjhvdDBvNTgKMJGMiTbsmn2+8L42rGx7SwcwWlp0cJc4
             cRT7n88yyiqv+So40qxFWIprtzUk31RLnS2a+5+TzCR2qs7+RTXBJw==
             -----END AGE ENCRYPTED FILE-----
-    lastmodified: "2026-05-29T14:20:25Z"
-    mac: ENC[AES256_GCM,data:Wl7OGTGaoziJ9duPaogWuwFUVFBtz4cx8WtOysbrEJuA9XiycPDjRDxPfTs66Khm9iKPCkKttr4iOMLLeQAcZrb8t7lZtfMXGZ6/CadzeZbVLrzrTbHVxCQ9xt+VvPvTnr8XVTLvRzZUgT322srsdoARl47sAZGVzY84HkOJwag=,iv:/h3zPiLkbJmFuIRPfV7nEIwJ4zZYxZkMnVR4TazOyLo=,tag:EzNBdwFrWCa+uDuTazx90g==,type:str]
+          recipient: age1rchcs2gk3wa0h8hdsvm3enu7qa4yq9gmag9k32qsfvrgghgufq2smx4s3n
     encrypted_regex: ^(data|stringData|acme)$
+    lastmodified: "2026-06-14T05:37:44Z"
+    mac: ENC[AES256_GCM,data:lTP/suHLdNLKmx+zSrYFnDWtpAH3xUAgVmUzkm1CskCgWnQYHk6fr1XSNVPQC/te5Y6megCeXUdQKDnMU5Fj9bBXsO2N2bF4aKP8JChCSmWrVtmWhaInmqE27+4tE4UybGIlS8N9t4PUtdxGNhd3MNuV9V9ZzEfmPLsTmKgkhoQ=,iv:bT+o9wpKL3F04ukQ9zHW+Idvy6jwCzYucsoOS3tcuig=,tag:wI7/sNlO89KzwqU3I4ahfg==,type:str]
     version: 3.12.1

@@ -5,6 +5,8 @@ metadata:
   name: k8s-gateway
   namespace: flux-system
 spec:
+  dependsOn:
+  - name: gateway-api-crds
   path: ./cluster/apps/networking/k8s-gateway/app
   prune: true
   sourceRef:

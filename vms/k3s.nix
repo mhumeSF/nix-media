@@ -54,6 +54,12 @@ in {
         tag        = "movies";
         proto      = "virtiofs";
       }
+      {
+        source     = "/tank0/gato-bucket";
+        mountPoint = "/gato-bucket";
+        tag        = "gato-bucket";
+        proto      = "virtiofs";
+      }
     ];
 
     volumes = [
@@ -86,6 +92,7 @@ in {
   fileSystems = {
     "/persist".neededForBoot = true;
     "/movies".neededForBoot = true;
+    "/gato-bucket".neededForBoot = true;
   };
 
   services.openssh.hostKeys = [
