@@ -4,3 +4,4 @@ kind: Kustomization
 resources:
 - cluster-settings.yaml
 - plex-vars.sops.yaml
+- b2-vars.sops.yaml

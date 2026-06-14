@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: Secret
+metadata:
+    name: b2-vars
+    namespace: flux-system
+stringData:
+    B2_BUCKET: ENC[AES256_GCM,data:8oceHa3FJVX6cSi+,iv:x4YTbeSo87XUx15If6n9CAzeb39wWR3ijcbVyRhqgwU=,tag:oq+uqPoJMmpeQ9JkJliVLg==,type:str]
+    B2_APPLICATION_KEY_ID: ENC[AES256_GCM,data:1AOXq5/tTmdlGUyLRZ64ZNtXq6g9fmAKYg==,iv:T0X0UlRi+DMGjKNKYechkdR8q6lydO5ZCwdEtu1Lx7Y=,tag:SO9+ADHgEhHX3s3qTJaI7g==,type:str]
+    B2_APPLICATION_KEY: ENC[AES256_GCM,data:tTIy/CI8J83gLcrc5qzm4lgn+tajeaJQLZ5Flk5RsA==,iv:TA6y2OjQKK0EKwdU/F6QFEbarKRV4LxabgmZVu8Qi7U=,tag:dr11RdCxxQXgbe44mGVQ8Q==,type:str]
+sops:
+    age:
+        - enc: |
+            -----BEGIN AGE ENCRYPTED FILE-----
+            YWdlLWVuY3J5cHRpb24ub3JnL3YxCi0+IFgyNTUxOSB2U3BkZnlQRjlYZFhpTUo5
+            R0xpSXFwOTAvOWNscks2cTE1bm5uRVdSS1g4ClcrYStWTTZZMkhHbzNEZjllejhM
+            eHpNN0Q5bEM0UUYxazNpd3h5TDhMdXcKLS0tIG5LVW11YW5HQUVCTFRWNHp2R1Mz
+            Nk5BSE9Xck4xTHZMTVJhb2hMcFp0YzQKf4/qLHGGlrpXEbhoSJwP9n3hyEqVRVCB
+            GkDvvbfjXj6trgst3rMjrL01TJZnsR+zaQ7PyWMEphlwOWX/HvfSXw==
+            -----END AGE ENCRYPTED FILE-----
+          recipient: age1rchcs2gk3wa0h8hdsvm3enu7qa4yq9gmag9k32qsfvrgghgufq2smx4s3n
+    encrypted_regex: ^(data|stringData|acme)$
+    lastmodified: "2026-06-14T05:11:14Z"
+    mac: ENC[AES256_GCM,data:rJKbYOVfIBZyL72wy5txBJtG02Hg4jFsM3R5ZhLg30X5oa2VoiIU7oZfT+Nhf4tRtzQu2yQvh18zxbuJb8IWQDfUgy3yFbE2kgAXuhkYohmJrTxIoDq3nomTbAqlOqS2vGi8GqtmU2hY+iSDIFzmR1+91GQm2CG6DslLR4SgZng=,iv:vm/O4faNCZeSizaieG+aEHTz0+Vo5DQYDlvmh7yHtzs=,tag:/lexFuu7VX8YWXJ8WX/WPw==,type:str]
+    version: 3.13.1
