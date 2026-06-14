@@ -18,6 +18,18 @@ spec:
   values:
     env:
       TZ: America/New_York
+      DB_HOSTNAME: immich-postgres-rw
+      DB_USERNAME:
+        valueFrom:
+          secretKeyRef:
+            name: immich-postgres-app
+            key: username
+      DB_PASSWORD:
+        valueFrom:
+          secretKeyRef:
+            name: immich-postgres-app
+            key: password
+      DB_DATABASE_NAME: immich
 
     immich:
       persistence:
@@ -40,18 +52,5 @@ spec:
           enabled: true
           type: emptyDir
 
-    postgresql:
+    valkey:
       enabled: true
-      auth:
-        username: immich
-        database: immich
-      primary:
-        persistence:
-          enabled: true
-          size: 8Gi
-
-    redis:
-      enabled: true
-      architecture: standalone
-      auth:
-        enabled: false
