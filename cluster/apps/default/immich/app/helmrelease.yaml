@@ -16,20 +16,24 @@ spec:
         namespace: flux-system
   maxHistory: 3
   values:
-    env:
-      TZ: America/New_York
-      DB_HOSTNAME: immich-postgres-rw
-      DB_USERNAME:
-        valueFrom:
-          secretKeyRef:
-            name: immich-postgres-app
-            key: username
-      DB_PASSWORD:
-        valueFrom:
-          secretKeyRef:
-            name: immich-postgres-app
-            key: password
-      DB_DATABASE_NAME: immich
+    controllers:
+      main:
+        containers:
+          main:
+            env:
+              TZ: America/New_York
+              DB_HOSTNAME: immich-postgres-rw
+              DB_USERNAME:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-postgres-app
+                    key: username
+              DB_PASSWORD:
+                valueFrom:
+                  secretKeyRef:
+                    name: immich-postgres-app
+                    key: password
+              DB_DATABASE_NAME: immich
 
     immich:
       persistence:
