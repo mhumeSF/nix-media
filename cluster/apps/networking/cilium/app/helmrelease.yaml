@@ -40,13 +40,6 @@ spec:
     gatewayAPI:
       enabled: false
 
-    # Enable socket-level LB for external traffic to VIPs
-    socketLB:
-      enabled: true
-    hostReachableServices:
-      enabled: true
-      protocols: tcp,udp
-
     # Hubble observability
     hubble:
       enabled: true
