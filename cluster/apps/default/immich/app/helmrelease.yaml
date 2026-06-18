@@ -49,23 +49,29 @@ spec:
       # Libraries; mounted read-only so Immich never modifies the originals.
       # The server pod also runs the microservices/background jobs in Immich
       # v2.x, so these mounts cover indexing/thumbnailing too.
-      # The Immich-managed upload store stays on the `library` claim
+      #
+      # These paths live under the `gato-bucket` virtiofs share that the k3s
+      # MicroVM already mounts from the media.local ZFS host
+      # (host: /tank0/gato-bucket/photos/* -> VM: /gato-bucket/photos/*). They
+      # must be on this share (not an arbitrary VM path), otherwise kubelet
+      # would create throwaway dirs on the VM's ephemeral rootfs that media.local
+      # cannot see. The Immich-managed upload store stays on the `library` claim
       # (immich-library-pvc -> /gato-bucket/immich), mounted by the chart's
       # hardcoded `data` volume.
       persistence:
         inbox:
           enabled: true
           type: hostPath
-          hostPath: /media/photos/inbox
-          hostPathType: DirectoryOrCreate
+          hostPath: /gato-bucket/photos/inbox
+          hostPathType: Directory
           globalMounts:
           - path: /external/inbox
             readOnly: true
         archive:
           enabled: true
           type: hostPath
-          hostPath: /media/photos/archive
-          hostPathType: DirectoryOrCreate
+          hostPath: /gato-bucket/photos/archive
+          hostPathType: Directory
           globalMounts:
           - path: /external/archive
             readOnly: true

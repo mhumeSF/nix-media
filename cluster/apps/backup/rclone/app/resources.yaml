@@ -1,9 +1,10 @@
 ---
 # Backblaze B2 backup source: only the curated photo archive.
-# nodeAffinity pins the claim (and therefore the rclone pod) to the node that
-# actually holds /media/photos/archive. This is critical: `rclone sync` mirrors
-# and DELETES, so a pod scheduled on a node without this data would prune the
-# remote bucket.
+# Path is on the `gato-bucket` virtiofs share (VM: /gato-bucket/photos/archive
+# -> host media.local: /tank0/gato-bucket/photos/archive). nodeAffinity pins the
+# claim (and therefore the rclone pod) to the node that has this share. This is
+# critical: `rclone sync` mirrors and DELETES, so a pod scheduled on a node
+# without this data would prune the remote bucket.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -16,8 +17,8 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   hostPath:
-    path: /media/photos/archive
-    type: DirectoryOrCreate
+    path: /gato-bucket/photos/archive
+    type: Directory
   nodeAffinity:
     required:
       nodeSelectorTerms:
