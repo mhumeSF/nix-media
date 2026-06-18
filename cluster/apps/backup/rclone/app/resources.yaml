@@ -1,8 +1,13 @@
 ---
+# Backblaze B2 backup source: only the curated photo archive.
+# nodeAffinity pins the claim (and therefore the rclone pod) to the node that
+# actually holds /media/photos/archive. This is critical: `rclone sync` mirrors
+# and DELETES, so a pod scheduled on a node without this data would prune the
+# remote bucket.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: gato-bucket-pv
+  name: photos-archive-pv
 spec:
   capacity:
     storage: 100Gi
@@ -11,8 +16,8 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: ""
   hostPath:
-    path: /gato-bucket
-    type: Directory
+    path: /media/photos/archive
+    type: DirectoryOrCreate
   nodeAffinity:
     required:
       nodeSelectorTerms:
@@ -25,13 +30,13 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: gato-bucket-pvc
+  name: photos-archive-pvc
   namespace: backup
 spec:
   accessModes:
   - ReadWriteMany
   storageClassName: ""
-  volumeName: gato-bucket-pv
+  volumeName: photos-archive-pv
   resources:
     requests:
       storage: 100Gi
@@ -82,7 +87,7 @@ spec:
           volumes:
           - name: data
             persistentVolumeClaim:
-              claimName: gato-bucket-pvc
+              claimName: photos-archive-pvc
           - name: rclone-config
             configMap:
               name: rclone-config

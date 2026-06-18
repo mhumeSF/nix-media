@@ -45,6 +45,30 @@ spec:
       image:
         repository: ghcr.io/immich-app/immich-server
         tag: v2.7.5
+      # Photo-workflow external libraries. Immich indexes these as External
+      # Libraries; mounted read-only so Immich never modifies the originals.
+      # The server pod also runs the microservices/background jobs in Immich
+      # v2.x, so these mounts cover indexing/thumbnailing too.
+      # The Immich-managed upload store stays on the `library` claim
+      # (immich-library-pvc -> /gato-bucket/immich), mounted by the chart's
+      # hardcoded `data` volume.
+      persistence:
+        inbox:
+          enabled: true
+          type: hostPath
+          hostPath: /media/photos/inbox
+          hostPathType: DirectoryOrCreate
+          globalMounts:
+          - path: /external/inbox
+            readOnly: true
+        archive:
+          enabled: true
+          type: hostPath
+          hostPath: /media/photos/archive
+          hostPathType: DirectoryOrCreate
+          globalMounts:
+          - path: /external/archive
+            readOnly: true
 
     machine-learning:
       enabled: true
