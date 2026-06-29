@@ -30,7 +30,8 @@
     nixosConfigurations.media = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = {
-        unstable = import nixpkgs-unstable { system = "x86_64-linux"; };
+        # allowUnfree: claude-code is unfree (codex is not)
+        unstable = import nixpkgs-unstable { system = "x86_64-linux"; config.allowUnfree = true; };
       };
       modules = [
         disko.nixosModules.disko

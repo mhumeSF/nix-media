@@ -1,12 +1,20 @@
 {
   self,
   pkgs,
+  unstable,
   ...
 }: {
   imports = [
     ./hardware-configuration.nix
     ./disk-config.nix
     ./common/nixie.nix
+  ];
+
+  # Host-only AI CLIs (pulled from unstable since they update frequently).
+  # Kept here rather than common/nixie.nix so they don't land on the VMs.
+  environment.systemPackages = [
+    unstable.claude-code
+    unstable.codex
   ];
 
   nix.settings.experimental-features = [ "nix-command" "flakes" ];
