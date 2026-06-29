@@ -1,4 +1,8 @@
-{ pkgs, ... }: {
+{ lib, pkgs, ... }: {
+  # plexmediaserver is unfree; allow just that package on the host.
+  nixpkgs.config.allowUnfreePredicate =
+    pkg: builtins.elem (lib.getName pkg) [ "plexmediaserver" ];
+
   # Plex Media Server runs natively on the host (moved out of the k3s cluster).
   # Config lives on the ZFS pool so it persists and gets snapshotted; libraries
   # are read straight off tank0 with no virtiofs hop.
