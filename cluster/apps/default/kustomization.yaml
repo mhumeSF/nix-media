@@ -4,4 +4,3 @@ kind: Kustomization
 resources:
 - ./hello/ks.yaml
 - ./immich/ks.yaml
-- ./plex/ks.yaml

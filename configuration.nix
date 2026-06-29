@@ -8,6 +8,7 @@
     ./hardware-configuration.nix
     ./disk-config.nix
     ./common/nixie.nix
+    ./plex.nix
   ];
 
   # Host-only AI CLIs (pulled from unstable since they update frequently).

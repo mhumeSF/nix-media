@@ -19,5 +19,4 @@ resources:
 - metallb.yaml
 - metrics-server.yaml
 - openebs-zfslocalpv.yaml
-- plex.yaml
 - prometheus-community.yaml
