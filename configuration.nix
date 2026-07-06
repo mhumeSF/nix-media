@@ -113,10 +113,14 @@
   # the `bridge` interface at boot; if it loses, it fails with
   # "Cannot find device bridge" and the VM (k3s/vmrouter) fails to start.
   # Order it after the bridge device exists so a reboot can't drop the cluster.
+  # As a drop-in (these are template units — a full override would drop the
+  # ExecStart and break them). `requires` (not `bindsTo`) so a networkd restart
+  # flapping the bridge during a deploy doesn't stop the running microVMs.
   systemd.services = let
     afterBridge = {
-      after   = [ "sys-subsystem-net-devices-bridge.device" ];
-      bindsTo = [ "sys-subsystem-net-devices-bridge.device" ];
+      overrideStrategy = "asDropin";
+      after    = [ "sys-subsystem-net-devices-bridge.device" ];
+      requires = [ "sys-subsystem-net-devices-bridge.device" ];
     };
   in {
     "microvm-macvtap-interfaces@k3s"      = afterBridge;
