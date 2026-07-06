@@ -109,6 +109,20 @@
     };
   };
 
+  # The macvtap setup for the LAN-attached VMs races systemd-networkd creating
+  # the `bridge` interface at boot; if it loses, it fails with
+  # "Cannot find device bridge" and the VM (k3s/vmrouter) fails to start.
+  # Order it after the bridge device exists so a reboot can't drop the cluster.
+  systemd.services = let
+    afterBridge = {
+      after   = [ "sys-subsystem-net-devices-bridge.device" ];
+      bindsTo = [ "sys-subsystem-net-devices-bridge.device" ];
+    };
+  in {
+    "microvm-macvtap-interfaces@k3s"      = afterBridge;
+    "microvm-macvtap-interfaces@vmrouter" = afterBridge;
+  };
+
   # Microvm directories (must exist before virtiofsd starts)
   systemd.tmpfiles.rules = [
     "d /var/lib/microvms/k3s 0755 microvm kvm -"
