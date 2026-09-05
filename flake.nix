@@ -27,6 +27,19 @@
   }@inputs:
 
   {
+    devShells = nixpkgs.lib.genAttrs [ "x86_64-linux" "aarch64-darwin" ] (system:
+      let pkgs = import nixpkgs { inherit system; };
+      in {
+        ci = pkgs.mkShell {
+          packages = [
+            pkgs.kustomize
+            pkgs.kubeconform
+            pkgs.yq-go
+          ];
+        };
+      }
+    );
+
     nixosConfigurations.media = nixpkgs.lib.nixosSystem {
       system = "x86_64-linux";
       specialArgs = {
