@@ -9,6 +9,7 @@
     ./disk-config.nix
     ./common/nixie.nix
     ./plex.nix
+    ./ops/codex-worker.nix
   ];
 
   # Host-only AI CLIs (pulled from unstable since they update frequently).
