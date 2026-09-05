@@ -5,7 +5,12 @@ on:
     branches:
     - main
   schedule:
-  - cron: '0 12 * * 1-5'
+  - cron: '17 * * * *'
+  workflow_dispatch:
+
+concurrency:
+  group: renovate
+  cancel-in-progress: false
 
 env:
   RENOVATE_REPOSITORIES: "${{ github.repository }}"
