@@ -1,0 +1,25 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: nix-media-runners
+  namespace: flux-system
+spec:
+  dependsOn:
+  - name: arc
+  - name: local-path-provisioner
+  path: ./cluster/apps/actions/nix-media-runners/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  healthChecks:
+  - apiVersion: helm.toolkit.fluxcd.io/v2
+    kind: HelmRelease
+    name: nix-media-runners
+    namespace: actions
+  decryption:
+    provider: sops
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
