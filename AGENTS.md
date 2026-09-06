@@ -14,6 +14,12 @@ PR descriptions and comments as publicly accessible.
   do not bypass it or add exclusions simply to make a task pass. Scanners do
   not replace reviewing infrastructure and personal information.
 
-Read CLAUDE.md for architecture and deployment conventions and TODO.md for
-task scope. Scheduled workers follow ops/codex-task-prompt.md and leave merging
+Read CLAUDE.md for architecture and deployment conventions for
+architecture. Scheduled workers follow ops/codex-task-prompt.md and leave merging
 and deployment to review.
+
+Plans, task queues, recovery procedures and run notes are PRIVATE. Keep them
+outside this repository in the worker state directory supplied by the launcher.
+Do not create documentation-only PRs or copy private plans into PR bodies.
+Public worker PRs contain implementation code/configuration only. Planning-only
+tasks finish privately and do not require a public commit or PR.
