@@ -94,7 +94,7 @@ timeout --signal=TERM --kill-after=30s 45m \
 git diff --check
 if [[ -n $(git status --porcelain) ]]; then
   git add --all
-  git -c user.name=white-bear -c user.email=white-bear@localhost \
+  git -c user.name=white-bear -c user.email=white-bear@media \
     -c commit.gpgsign=false commit -m "maintenance: $task unattended work for review"
   publish_for_review
 else
