@@ -10,7 +10,7 @@ Use `blocked` with a concrete reason when required evidence is unavailable.
 | ID | Priority | Status | Task |
 | --- | --- | --- | --- |
 | M01 | P1 | review | Add repository validation before automated dependency merges |
-| M02 | P0 | ready | Document and verify the persistent storage and recovery plan |
+| M02 | P0 | review | Document and verify the persistent storage and recovery plan |
 | M03 | P1 | review | Align Flux HelmRelease health checks with served APIs |
 | M04 | P1 | blocked | Exclude the host reservation from the Cilium address pool |
 | M05 | P0 | blocked | Migrate local-path PVC data onto persistent storage |
@@ -78,3 +78,14 @@ record credentials. A failed or timed-out run is not a completed task.
   health-check references to v2 so the new API check passes. No Python validator.
   Validation and GitHub settings are being verified before merge; see the PR
   check results and ci/README.md for coverage and limitations.
+- 2026-09-06, M02, codex/M02-20260906T033344Z: added
+  `docs/storage-recovery.md` with the static mount/data inventory, confirmed the
+  active v0.0.31 provisioner default `/opt/local-path-provisioner` does not
+  intersect the block-backed `/var/lib/rancher/k3s/storage`, and documented
+  live preflight, backup/restore proof, migration, rollback, and reboot checks.
+  Validation: inspected the pinned upstream manifest/README; `nix eval`
+  confirmed etcd `/var/lib/etcd` and both VM volume mount points; the workflow's
+  locked Nix evaluation, all-target Kustomize/kubeconform validation, obsolete
+  API grep, and `git diff --check` passed. No live host/cluster checks, backup,
+  restore drill, migration, or reboot was performed. Reviewer should verify the
+  plan and collect its live evidence before unblocking M05/M06 execution.
