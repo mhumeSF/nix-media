@@ -1,0 +1,19 @@
+name: Runner smoke test
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  smoke:
+    name: In-cluster runner smoke test
+    runs-on: k3s
+    timeout-minutes: 10
+    steps:
+    - name: Report runner environment
+      run: |
+        echo "Hello from the k3s ARC runner"
+        uname -a
+        nproc
+        df -h /home/runner/_work
