@@ -1,0 +1,50 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: nix-media-runners
+  namespace: actions
+spec:
+  interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set
+    namespace: flux-system
+  maxHistory: 3
+  values:
+    githubConfigUrl: https://github.com/mhumesf/nix-media
+    githubConfigSecret: gato-bot-github-app
+    # `runs-on: k3s` in workflows targets these runners
+    runnerScaleSetName: k3s
+    minRunners: 0
+    maxRunners: 3
+    controllerServiceAccount:
+      name: arc-gha-rs-controller
+      namespace: actions
+    containerMode:
+      type: kubernetes
+      # Work volume must be a PVC: emptyDirs land on the VM's tmpfs root
+      # and would eat RAM; local-path is the block-backed storage volume.
+      kubernetesModeWorkVolumeClaim:
+        accessModes: ["ReadWriteOnce"]
+        storageClassName: local-path
+        resources:
+          requests:
+            storage: 10Gi
+    template:
+      spec:
+        containers:
+        - name: runner
+          image: ghcr.io/actions/actions-runner:latest
+          command: ["/home/runner/run.sh"]
+          env:
+          # Let plain jobs (no `container:` in the workflow) run directly
+          # in the runner pod instead of requiring a job container.
+          - name: ACTIONS_RUNNER_REQUIRE_JOB_CONTAINER
+            value: "false"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              memory: 4Gi
