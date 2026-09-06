@@ -1,0 +1,15 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: arc
+  namespace: actions
+spec:
+  interval: 5m
+  chartRef:
+    kind: OCIRepository
+    name: gha-runner-scale-set-controller
+    namespace: flux-system
+  maxHistory: 3
+  values:
+    replicaCount: 1
