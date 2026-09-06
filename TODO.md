@@ -9,9 +9,9 @@ Use `blocked` with a concrete reason when required evidence is unavailable.
 
 | ID | Priority | Status | Task |
 | --- | --- | --- | --- |
-| M01 | P1 | ready | Add repository validation before automated dependency merges |
+| M01 | P1 | review | Add repository validation before automated dependency merges |
 | M02 | P0 | ready | Document and verify the persistent storage and recovery plan |
-| M03 | P1 | ready | Align Flux HelmRelease health checks with served APIs |
+| M03 | P1 | review | Align Flux HelmRelease health checks with served APIs |
 | M04 | P1 | blocked | Exclude the host reservation from the Cilium address pool |
 | M05 | P0 | blocked | Migrate local-path PVC data onto persistent storage |
 | M06 | P0 | blocked | Persist etcd and required k3s identity state |
@@ -72,3 +72,9 @@ Use `blocked` with a concrete reason when required evidence is unavailable.
 Append one entry per attempted task: UTC date, task ID, branch, changes,
 validation commands/results, remaining limitations, and next action. Never
 record credentials. A failed or timed-out run is not a completed task.
+
+- 2026-09-05, M01/M03, white-bear/renovate-automerge: prepare standard-tool
+  validation, hourly Renovate runs and gated PR automerge. Update HelmRelease
+  health-check references to v2 so the new API check passes. No Python validator.
+  Validation and GitHub settings are being verified before merge; see the PR
+  check results and ci/README.md for coverage and limitations.
