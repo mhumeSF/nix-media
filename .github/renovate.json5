@@ -7,17 +7,31 @@
     ":prHourlyLimitNone",
     "helpers:pinGitHubActionDigests"
   ],
-  "automerge": true,
-  "automergeType": "branch",
+  "automerge": false,
+  "automergeType": "pr",
   "automergeStrategy": "merge",
   "platformAutomerge": true,
-  "flux": {"fileMatch": ["cluster/.+\\.yaml$"]},
-  "helm-values": {"fileMatch": ["cluster/.+helmrelease\\.yaml$"]},
-  "kubernetes": {"fileMatch": ["cluster/.+\\.yaml$"]},
+  "flux": {
+    "fileMatch": [
+      "cluster/.+\\.yaml$"
+    ]
+  },
+  "helm-values": {
+    "fileMatch": [
+      "cluster/.+helmrelease\\.yaml$"
+    ]
+  },
+  "kubernetes": {
+    "fileMatch": [
+      "cluster/.+\\.yaml$"
+    ]
+  },
   "customManagers": [
     {
       "customType": "regex",
-      "fileMatch": ["cluster/.+\\.yaml$"],
+      "fileMatch": [
+        "cluster/.+\\.yaml$"
+      ],
       "matchStrings": [
         "registryUrl=(?<registryUrl>.*?)\n *chart: (?<depName>.*?)\n *version: (?<currentValue>.*)\n",
         "registryUrl=(?<registryUrl>.*?) chart=(?<depName>.*?)\n.*\\/(?<currentValue>.*?)\\/"
@@ -27,17 +41,34 @@
     {
       "customType": "regex",
       "description": "Update jenkins plugins in helm-release",
-      "fileMatch": ["cluster/apps/default/jenkins/app/helmrelease.yaml"],
-      "matchStrings": ["\\s+-\\s(?<depName>[\\w-]+):(?<currentValue>\\S+)"],
+      "fileMatch": [
+        "cluster/apps/default/jenkins/app/helmrelease.yaml"
+      ],
+      "matchStrings": [
+        "\\s+-\\s(?<depName>[\\w-]+):(?<currentValue>\\S+)"
+      ],
       "datasourceTemplate": "jenkins-plugins",
       "versioningTemplate": "maven"
     }
   ],
   "packageRules": [
     {
-      "description": "Auto-merge updates created by custom managers",
-      "matchManagers": ["custom.regex"],
+      "description": "Automerge tested stable minor, patch, and digest updates",
+      "matchUpdateTypes": [
+        "minor",
+        "patch",
+        "digest"
+      ],
+      "matchCurrentVersion": "!/^v?0\\./",
       "automerge": true
+    },
+    {
+      "description": "Review major upgrades and all pre-1.0 version changes",
+      "matchUpdateTypes": [
+        "major"
+      ],
+      "automerge": false
     }
-  ]
+  ],
+  "ignoreTests": false
 }
