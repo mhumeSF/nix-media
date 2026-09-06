@@ -1,4 +1,4 @@
-Read TODO.md and CLAUDE.md. The launcher identifies one task below. Work only
+Read the private queue path supplied below and CLAUDE.md. The launcher identifies one task below. Work only
 on that task, verifying its premise against current files and pinned upstream
 sources. Complete the authorized repository edits and appropriate validation.
 
@@ -24,10 +24,20 @@ an unrelated task. Do not spawn additional agents.
 
 Do not commit, switch branches, merge, reset, or push: the launcher owns Git
 lifecycle, commits your result and opens a review PR after successful exit. Preserve unrelated
-files. Never mark an untested migration as done. When implementation and checks
-are complete, set this task to review. If required evidence is unavailable,
+files. Never mark an untested migration as done. When code implementation and checks
+are complete, set this task to review in the PRIVATE queue. Planning-only tasks
+are completed by saving their artifact in the PRIVATE plans directory and
+marking the task done, without editing or committing repository files. If required evidence is unavailable,
 set it to blocked and state precisely what is needed; do not fabricate evidence
-or proceed to another task. Update TODO.md run notes in either case.
+or proceed to another task. Update private queue run notes in either case.
 
 Finish with task ID, changes, tests, limitations and the next review/deployment
 step. You have approximately 40 minutes; leave a useful handoff before that.
+
+Plans, recovery procedures, TODO lists and run notes must never be created in
+this repository or copied into public PRs. Use only the private paths supplied
+by the launcher for those artifacts, even if an older queue entry mentions a
+repository documentation path. Only implementation code/configuration changes
+belong in the repository. Do not generate a markdown file to summarize work in
+public. Do not mark an operational migration done merely because its private
+plan is complete; approval for executing live changes remains separate.

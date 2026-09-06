@@ -5,7 +5,12 @@ umask 077
 # Linux runner; use only with a dedicated clone owned by the worker account.
 repo=${CODEX_TASK_REPO:-/var/lib/codex-worker/repo}
 state=${CODEX_TASK_STATE:-/var/lib/codex-worker/runs}
-mkdir -p "$state"
+mkdir -p "$state/plans"
+queue="$state/TODO.md"
+if [[ ! -f "$queue" ]]; then
+  echo "Private task queue missing: $queue"
+  exit 1
+fi
 exec 9>"$state/runner.lock"
 flock -n 9 || exit 0
 export GIT_TERMINAL_PROMPT=0
@@ -13,7 +18,7 @@ cd "$repo"
 test -d .git
 
 publish_for_review() {
-  local branch task title url
+  local branch task url
   branch=$(git branch --show-current)
   if [[ ! "$branch" =~ ^codex/(M[0-9]+)-[0-9]{8}T[0-9]{6}Z$ ]]; then
     echo "Paused: $branch is not a worker task branch; publish it manually."
@@ -29,20 +34,21 @@ publish_for_review() {
     echo "Awaiting review: $url (closed or squash-merged PRs need manual acknowledgement)."
     return 0
   fi
-  title=$(awk -F '|' -v task="$task" \
-    '$2 ~ "^ " task " $" {gsub(/^ +| +$/, "", $5); print $5; exit}' TODO.md)
-  title="${task}: ${title:-maintenance work for review}"
+  if git diff --name-only origin/main...HEAD | grep -Ei '(^|/)(docs|plans|reports|run-notes)(/|$)|(^|/)(TODO|PLAN|NOTES)(\.|$)|\.(md|log|jsonl)$'; then
+    echo "Publication blocked: planning/documentation/log files must remain private."
+    return 1
+  fi
   # The wrapper publishes only its own task branch, never main or a force-push.
   # Retry on the next timer invocation if pushing or PR creation fails.
   git push -u origin "HEAD:refs/heads/$branch"
   {
     printf 'Prepared one maintenance task: %s.\n\n' "$task"
-    printf 'Review TODO.md run notes for changes, validation and limitations.\n'
+    printf 'Implementation changes only; planning and run notes remain private.\n'
     printf 'No automatic merge or deployment is performed by this worker.\n\n'
     printf 'Merge with a merge commit to let the next scheduled run advance.\n'
   } > "$state/pr-body.md"
   gh pr create --repo mhumeSF/nix-media --base main --head "$branch" \
-    --title "$title" --body-file "$state/pr-body.md"
+    --title "Maintenance code update ($task)" --body-file "$state/pr-body.md"
 }
 
 if [[ -n $(git status --porcelain) ]]; then
@@ -54,8 +60,13 @@ if [[ $(git rev-list --count origin/main..HEAD) != 0 ]]; then
   publish_for_review
   exit 0
 fi
+previous_branch=$(git branch --show-current)
+if [[ "$previous_branch" =~ ^codex/(M[0-9]+)-[0-9]{8}T[0-9]{6}Z$ ]]; then
+  accepted_task=${BASH_REMATCH[1]}
+  sed -i "s/| $accepted_task |\([^|]*\)| review |/| $accepted_task |\1| done |/" "$queue"
+fi
 git switch --detach origin/main
-task=$(awk -F '|' '$4 ~ /^ ready $/ {gsub(/ /, "", $2); print $2; exit}' TODO.md)
+task=$(awk -F '|' '$4 ~ /^ ready $/ {gsub(/ /, "", $2); print $2; exit}' "$queue")
 if [[ -z "$task" ]]; then
   echo "No ready tasks."
   exit 0
@@ -67,14 +78,14 @@ run="$state/$stamp-$task"
 mkdir -p "$run"
 git switch -c "$branch"
 cat ops/codex-task-prompt.md > "$run/prompt.txt"
-printf '\nSelected task: %s\nCurrent branch: %s\n' "$task" "$branch" >> "$run/prompt.txt"
+printf '\nSelected task: %s\nCurrent branch: %s\nPrivate queue: %s\nPrivate plans directory: %s/plans\n' "$task" "$branch" "$queue" "$state" >> "$run/prompt.txt"
 echo "Starting $task on $branch; logs: $run"
 
 # Git metadata can be protected by Codex's sandbox, so the wrapper commits.
 # Network access permits fetching dependency/docs inputs. The wrapper uses
 # the worker's GitHub login to publish the completed branch after Codex exits.
 timeout --signal=TERM --kill-after=30s 45m \
-  codex exec --sandbox workspace-write \
+  codex exec --sandbox workspace-write --add-dir "$state" \
     -c approval_policy='"never"' \
     -c sandbox_workspace_write.network_access=true \
     --json --output-last-message "$run/summary.md" - \
@@ -87,5 +98,5 @@ if [[ -n $(git status --porcelain) ]]; then
     -c commit.gpgsign=false commit -m "maintenance: $task unattended work for review"
   publish_for_review
 else
-  echo "No changes. Inspect $run/summary.md for the outcome."
+  echo "Private task finished without public code changes. Inspect $run/summary.md for the outcome."
 fi
