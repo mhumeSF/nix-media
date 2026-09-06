@@ -1,171 +1,88 @@
 # Periodic Codex maintenance
 
-Use a NixOS systemd timer, one fresh `codex exec` session per run, one task per
-session, and one branch awaiting review at a time. Start every six hours. Faster
-execution is useful once checks and review throughput justify it; parallel
-storage/network changes on this single production host are a poor starting point.
-TODO.md carries state between sessions. This is not a continuation of the Mac
-conversation; the server session sees repository instructions and its own tools.
+The systemd timer launches a fresh Codex session every six hours. Each session
+handles one ready task from TODO.md, validates its work and updates run notes.
+The wrapper commits as `white-bear <white-bear@localhost>`, pushes the task
+branch and opens a GitHub PR. It never merges or deploys. It pauses until that
+branch is merged; only one task is awaiting review at a time.
 
-The runner makes local commits only. Flux watches main, so a main-branch merge
-is a deployment decision. Review each branch before publishing or merging it.
-The worker needs Codex authentication. GitHub CLI authentication is optional for
-publishing branches manually; it does not need kubeconfig, an SSH deployment
-key, sudo privileges, or Nix trusted-user privileges. A separate
-VM provides stronger isolation if you later add less trusted tasks/tools.
+The timer is enabled across reboots. GitHub authentication and Codex login must
+both be configured as codex-worker. No sudo privileges or live cluster
+credentials are needed for repository work.
 
-## Nix work on the same host
+## Initial setup
 
-Evaluation and builds can run on media itself. The worker defaults to one Nix
-build job and two build cores, with a 45-minute session timeout. Its service is
-limited to 4 GB RAM and two CPUs, but builds delegated to nix-daemon are outside
-that service's cgroup limits. Watch free disk space and host load during the
-first builds; lower concurrency is not a hard memory bound on compiler jobs.
-Some builds may exceed the run deadline, and daemon-side work can outlive the
-client. Start with evaluation and targeted builds, not a full-system build on
-every timer tick.
-
-Updating flake.lock and building a proposed system does not activate it. Keep
-`nixos-rebuild switch` under owner control initially. A switch can restart VMs,
-drop networking, or stop the worker if its own unit changes. NixOS generation
-rollback does not undo application/database migrations. Later, automate only
-explicitly eligible updates after successful build, backup and health checks;
-keep storage, networking and identity migrations as separate maintenance work.
-
-## Install on media.local
-
-1. Commit these files locally and get them onto the repository's main branch
-   through your normal review process. Preserve the unrelated flake.lock edit.
-   To commit just this setup: `git add TODO.md ops` followed by
-   `git commit -m "Add maintenance queue and periodic Codex runner"`.
-2. The worker module is imported in configuration.nix. Deploy the host from
-   the Mac using `make all`. Review the existing lock
-   changes before deploying. This creates the account and units; the timer is
-   not automatically started. Host Codex is already declared in configuration.nix.
-3. SSH into the host as nixie and initialize the dedicated clone:
-
-   ```sh
-   sudo -u codex-worker -H git clone https://github.com/mhumeSF/nix-media.git /var/lib/codex-worker/repo
-   sudo -u codex-worker -H git -C /var/lib/codex-worker/repo config user.name white-bear
-   sudo -u codex-worker -H git -C /var/lib/codex-worker/repo config user.email white-bear@localhost
-   sudo -u codex-worker -H git -C /var/lib/codex-worker/repo config commit.gpgsign false
-   sudo -u codex-worker -H codex login --device-auth
-   sudo -u codex-worker -H codex login status
-   ```
-
-   Follow the device URL/code on your own browser; enable device-code login in
-   your account settings if required. Alternatively, provision an API key for
-   the worker and use `codex login --with-api-key` via stdin. Do not put keys in
-   Git or Nix expressions (Nix store contents are readable). Login is specific
-   to this account; the Mac's session does not authenticate the server.
-   If the repository is private, provision read-only repository access first.
-
-4. Run a supervised first task and inspect the outcome:
-
-   ```sh
-   sudo systemctl start codex-maintenance.service
-   sudo journalctl -u codex-maintenance.service -n 100 --no-pager
-   sudo -u codex-worker -H git -C /var/lib/codex-worker/repo log -1 --stat
-   sudo ls /var/lib/codex-worker/runs
-   ```
-
-   Each run records prompt, JSONL events, stderr and final summary in a private
-   run directory. Inspect stderr if authentication or sandbox setup fails.
-   The timeout limits elapsed time, not token spending; use your account/API
-   usage controls as appropriate. Retain useful logs and periodically archive
-   older run directories to avoid unbounded disk usage.
-
-5. After the smoke test, enable scheduling declaratively by adding
-   `wantedBy = [ "timers.target" ];` to the timer definition, then redeploy.
-   For a temporary trial until reboot, simply run:
-
-   ```sh
-   sudo systemctl start codex-maintenance.timer
-   systemctl list-timers codex-maintenance.timer
-   ```
-
-## Review and resume
-
-### GitHub authentication and commit identity
-
-Commits are authored and committed as `white-bear <white-bear@localhost>`.
-This is a local Git identity, not a newly created GitHub account. Commits are
-unsigned so unattended runs do not depend on the Mac's 1Password signer.
-GitHub associates commits with accounts through verified email addresses;
-this localhost address intentionally claims no existing GitHub account.
-
-To publish using your GitHub account, authenticate **as the worker** on media:
+Deploy the imported ops/codex-worker.nix module with the normal reviewed host
+configuration. Initialize /var/lib/codex-worker/repo as a clone of
+https://github.com/mhumeSF/nix-media.git, owned by codex-worker. Then on media:
 
 ```sh
-sudo -u codex-worker -H gh auth login --hostname github.com --git-protocol https --web
-sudo -u codex-worker -H gh auth setup-git
-sudo -u codex-worker -H gh auth status
+sudo -u codex-worker -H sh -c 'cd "$HOME" && gh auth login --git-protocol https --web && gh auth setup-git'
+sudo -u codex-worker -H sh -c 'cd "$HOME" && codex login --device-auth'
+sudo systemctl start codex-maintenance.service
+sudo journalctl -u codex-maintenance.service -n 50 --no-pager
 ```
 
-Then, after reviewing a completed local task, publish its branch:
+Changing directory matters: sudo -H alone can leave the worker in an
+inaccessible /home/nixie working directory. Authentication is specific to the
+worker account; the Mac's credentials do not authenticate the server.
+The unsigned white-bear identity is a local Git identity, not a separate GitHub
+account. Branch publication uses the account authenticated through gh.
 
-```sh
-sudo -u codex-worker -H git -C /var/lib/codex-worker/repo push -u origin HEAD
-```
+## Review and recovery
 
-The push uses your authenticated GitHub account while retaining white-bear as
-the commit author. The scheduled runner still does not push or merge. If you
-prefer not to store GitHub write credentials on the worker, use the bundle flow
-below and publish from the Mac. GitHub login and Codex login are separate.
+Task PRs include their ID and title; TODO.md run notes carry validation and
+limitations. Merge using a merge commit so the next run recognizes the work as
+accepted. Change review to done when accepting a task. No model session starts
+while an earlier task branch remains unmerged.
 
-The next invocation fetches main and pauses if the checkout is dirty or HEAD
-contains commits not on origin/main. Timeouts preserve partial edits for review.
-No branch is automatically pushed, rebased, reset or deleted.
+If pushing or creating a PR fails, the local commit remains intact. The next
+invocation retries publication before pausing. Existing PRs are not duplicated.
+A closed/rejected or squash-merged PR requires explicit acknowledgement after
+review; it does not cause the worker to discard work automatically.
 
-To bring a completed branch to your Mac without giving the worker write access,
-first grant nixie a readable copy of a bundle on the server:
-
-```sh
-sudo -u codex-worker -H git -C /var/lib/codex-worker/repo bundle create /var/lib/codex-worker/result.bundle HEAD
-sudo install -o nixie -g users -m 0600 /var/lib/codex-worker/result.bundle /home/nixie/codex-result.bundle
-```
-
-On the Mac, choose a fresh review branch name:
-
-```sh
-scp nixie@media.local:codex-result.bundle /tmp/codex-result.bundle
-git fetch /tmp/codex-result.bundle HEAD:refs/heads/review/codex-task
-git diff main...review/codex-task
-```
-
-Review the patch and TODO run notes, run the relevant checks, and publish the
-review branch using your normal GitHub credentials. Change the task status from
-review to done when accepting it, and merge through your normal process. Live
-migration tasks remain blocked until their explicit prerequisites are met.
-
-After a merge commit retaining the worker commit, the next scheduled run can
-advance automatically. After a squash/rebase merge (or an intentionally rejected
-branch), pause the timer, preserve any partial work, and acknowledge the reviewed
-result explicitly on the server:
+After a squash/rebase merge or rejection, pause the timer, wait for any running
+service to finish, and preserve partial work. Only with a clean checkout and
+the previous task resolved, acknowledge it on the server:
 
 ```sh
 sudo systemctl stop codex-maintenance.timer
-# Wait for any running service to finish before touching the checkout.
 systemctl is-active codex-maintenance.service
 sudo -u codex-worker -H git -C /var/lib/codex-worker/repo status --short
 sudo -u codex-worker -H git -C /var/lib/codex-worker/repo fetch origin main
-# Only with a clean checkout and after resolving the previous task:
 sudo -u codex-worker -H git -C /var/lib/codex-worker/repo switch --detach origin/main
 sudo systemctl start codex-maintenance.timer
 ```
 
-The old branch remains available. If rejecting a task, update main's TODO entry
-or instructions so the next run does not repeat the same unsuccessful approach.
-Stopping the timer does not terminate an active run; use
-`sudo systemctl stop codex-maintenance.service` only when you intend to interrupt
-it, then inspect any partial edits before resuming.
+The old branch remains available. Update main's TODO entry when rejecting a
+task to avoid repeating it. Dirty worktrees and timeouts require inspection;
+the runner never resets, deletes or force-pushes branches. Stopping the timer
+does not stop an active task. Logs, stderr and final summaries are kept in
+/var/lib/codex-worker/runs; periodically archive older logs.
 
-## References and validation
+## Host resources and deployment boundary
+
+Sessions have a 45-minute timeout. The service has a 4 GB memory limit and two
+CPUs, and requests one Nix build job with two cores. Nix-daemon builds run
+outside that service's cgroup and may outlive its client; these are not hard
+host-wide memory or spending limits. Watch free disk and load. Start with
+evaluation and targeted builds rather than rebuilding the full host each run.
+
+The worker prepares repository changes. It does not switch NixOS, restart VMs,
+mutate Kubernetes, decrypt secrets or migrate data. Flux deploys cluster changes
+from main after review. NixOS rollback does not undo database migrations.
+
+## References
 
 - [Official non-interactive Codex documentation](https://developers.openai.com/codex/noninteractive/)
 - [Official Codex authentication documentation](https://developers.openai.com/codex/auth/)
 
-CLI options were checked against the local `codex exec --help`. Verify the
-server's installed version supports the same options before enabling the timer.
-The module is imported by the host configuration, but the timer is deliberately
-not enabled at boot until authentication and the first run have been verified.
+## Public repository
+
+AGENTS.md and the task prompt prohibit publishing secrets, raw logs, personal
+data and newly discovered private infrastructure details. Public procedures
+use placeholders. The wrapper runs Gitleaks against task commits with findings
+redacted before any push. A finding stops publication and leaves the local work
+for inspection; do not bypass the scanner. Gitleaks detects credential patterns,
+not every kind of sensitive information, so a public-safe diff review is still
+required. Run logs and authentication files stay outside the checkout.

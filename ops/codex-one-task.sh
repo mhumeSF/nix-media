@@ -11,13 +11,47 @@ flock -n 9 || exit 0
 export GIT_TERMINAL_PROMPT=0
 cd "$repo"
 test -d .git
+
+publish_for_review() {
+  local branch task title url
+  branch=$(git branch --show-current)
+  if [[ ! "$branch" =~ ^codex/(M[0-9]+)-[0-9]{8}T[0-9]{6}Z$ ]]; then
+    echo "Paused: $branch is not a worker task branch; publish it manually."
+    return 0
+  fi
+  task=${BASH_REMATCH[1]}
+  # This repository is public. Scan only unpublished work, redact findings,
+  # and stop before any push if potential credentials are detected.
+  gitleaks git --redact --log-opts="origin/main..HEAD" "$repo"
+  url=$(gh pr list --repo mhumeSF/nix-media --head "$branch" --state all \
+    --json url --jq '.[0].url // empty')
+  if [[ -n "$url" ]]; then
+    echo "Awaiting review: $url (closed or squash-merged PRs need manual acknowledgement)."
+    return 0
+  fi
+  title=$(awk -F '|' -v task="$task" \
+    '$2 ~ "^ " task " $" {gsub(/^ +| +$/, "", $5); print $5; exit}' TODO.md)
+  title="${task}: ${title:-maintenance work for review}"
+  # The wrapper publishes only its own task branch, never main or a force-push.
+  # Retry on the next timer invocation if pushing or PR creation fails.
+  git push -u origin "HEAD:refs/heads/$branch"
+  {
+    printf 'Prepared one maintenance task: %s.\n\n' "$task"
+    printf 'Review TODO.md run notes for changes, validation and limitations.\n'
+    printf 'No automatic merge or deployment is performed by this worker.\n\n'
+    printf 'Merge with a merge commit to let the next scheduled run advance.\n'
+  } > "$state/pr-body.md"
+  gh pr create --repo mhumeSF/nix-media --base main --head "$branch" \
+    --title "$title" --body-file "$state/pr-body.md"
+}
+
 if [[ -n $(git status --porcelain) ]]; then
   echo "Paused: uncommitted work exists in $repo. Inspect and preserve it."
   exit 0
 fi
 git fetch origin main
 if [[ $(git rev-list --count origin/main..HEAD) != 0 ]]; then
-  echo "Paused: $(git branch --show-current) has commits awaiting review."
+  publish_for_review
   exit 0
 fi
 git switch --detach origin/main
@@ -37,8 +71,8 @@ printf '\nSelected task: %s\nCurrent branch: %s\n' "$task" "$branch" >> "$run/pr
 echo "Starting $task on $branch; logs: $run"
 
 # Git metadata can be protected by Codex's sandbox, so the wrapper commits.
-# Network access permits fetching dependency/docs inputs. GitHub login is
-# optional for owner-initiated publication; this runner never pushes.
+# Network access permits fetching dependency/docs inputs. The wrapper uses
+# the worker's GitHub login to publish the completed branch after Codex exits.
 timeout --signal=TERM --kill-after=30s 45m \
   codex exec --sandbox workspace-write \
     -c approval_policy='"never"' \
@@ -51,7 +85,7 @@ if [[ -n $(git status --porcelain) ]]; then
   git add --all
   git -c user.name=white-bear -c user.email=white-bear@localhost \
     -c commit.gpgsign=false commit -m "maintenance: $task unattended work for review"
-  echo "Committed locally on $branch. Review before publishing or merging."
+  publish_for_review
 else
   echo "No changes. Inspect $run/summary.md for the outcome."
 fi
