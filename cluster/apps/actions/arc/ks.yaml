@@ -1,0 +1,20 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: arc
+  namespace: flux-system
+spec:
+  path: ./cluster/apps/actions/arc/app
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  healthChecks:
+  - apiVersion: helm.toolkit.fluxcd.io/v2
+    kind: HelmRelease
+    name: arc
+    namespace: actions
+  interval: 30m
+  retryInterval: 1m
+  timeout: 5m
