@@ -91,4 +91,4 @@ spec:
               claimName: photos-archive-pvc
           - name: rclone-config
             secret:
-              name: rclone-config
+              secretName: rclone-config
