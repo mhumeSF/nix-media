@@ -43,11 +43,11 @@ spec:
       storage: 100Gi
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: rclone-config
   namespace: backup
-data:
+stringData:
   rclone.conf: |
     [b2]
     type = b2
@@ -90,5 +90,5 @@ spec:
             persistentVolumeClaim:
               claimName: photos-archive-pvc
           - name: rclone-config
-            configMap:
-              name: rclone-config
+            secret:
+              secretName: rclone-config
