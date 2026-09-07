@@ -31,7 +31,7 @@ publish_for_review() {
   url=$(gh pr list --repo mhumeSF/nix-media --head "$branch" --state all \
     --json url --jq '.[0].url // empty')
   if [[ -n "$url" ]]; then
-    echo "Awaiting review: $url (closed or squash-merged PRs need manual acknowledgement)."
+    echo "Awaiting review: $url"
     return 0
   fi
   if git diff --name-only origin/main...HEAD | grep -Ei '(^|/)(docs|plans|reports|run-notes)(/|$)|(^|/)(TODO|PLAN|NOTES)(\.|$)|\.(md|log|jsonl)$'; then
@@ -45,7 +45,7 @@ publish_for_review() {
     printf 'Prepared one maintenance task: %s.\n\n' "$task"
     printf 'Implementation changes only; planning and run notes remain private.\n'
     printf 'No automatic merge or deployment is performed by this worker.\n\n'
-    printf 'Merge with a merge commit to let the next scheduled run advance.\n'
+    printf 'The next scheduled run advances after GitHub confirms this revision was merged.\n'
   } > "$state/pr-body.md"
   gh pr create --repo mhumeSF/nix-media --base main --head "$branch" \
     --title "Maintenance code update ($task)" --body-file "$state/pr-body.md"
@@ -56,11 +56,32 @@ if [[ -n $(git status --porcelain) ]]; then
   exit 0
 fi
 git fetch origin main
-if [[ $(git rev-list --count origin/main..HEAD) != 0 ]]; then
-  publish_for_review
-  exit 0
-fi
 previous_branch=$(git branch --show-current)
+if [[ $(git rev-list --count origin/main..HEAD) != 0 ]]; then
+  accepted=false
+  if [[ "$previous_branch" =~ ^codex/(M[0-9]+)-[0-9]{8}T[0-9]{6}Z$ ]]; then
+    # Squash/rebase merges do not preserve ancestry. Only acknowledge the
+    # exact reviewed revision, with its merge present on the fetched main.
+    pr=$(gh pr list --repo mhumeSF/nix-media --head "$previous_branch" --state all \
+      --json state,headRefOid,baseRefName,mergeCommit,url \
+      --jq '.[] | [.state, .headRefOid, .baseRefName, (.mergeCommit.oid // "-"), .url] | @tsv')
+    if [[ -n "$pr" ]]; then
+      IFS=$'\t' read -r pr_state pr_head pr_base pr_merge pr_url <<< "$pr"
+      if [[ "$pr_state" == MERGED && "$pr_head" == "$(git rev-parse HEAD)" && "$pr_base" == main ]] \
+        && git merge-base --is-ancestor "$pr_merge" origin/main; then
+        accepted=true
+        echo "Accepted merged task: $pr_url"
+      elif [[ "$pr_state" != OPEN ]]; then
+        echo "Paused: $pr_url is $pr_state but does not confirm this local revision was accepted. Preserve and reconcile the branch."
+        exit 1
+      fi
+    fi
+  fi
+  if [[ "$accepted" != true ]]; then
+    publish_for_review
+    exit 0
+  fi
+fi
 if [[ "$previous_branch" =~ ^codex/(M[0-9]+)-[0-9]{8}T[0-9]{6}Z$ ]]; then
   accepted_task=${BASH_REMATCH[1]}
   sed -i "s/| $accepted_task |\([^|]*\)| review |/| $accepted_task |\1| done |/" "$queue"
