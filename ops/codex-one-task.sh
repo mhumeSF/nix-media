@@ -17,6 +17,21 @@ export GIT_TERMINAL_PROMPT=0
 cd "$repo"
 test -d .git
 
+block_publication() {
+  local reason=$1 archive
+  archive="$state/blocked/$task-$(git rev-parse HEAD)"
+  mkdir -p "$archive"
+  # Keep the original local branch and an independent private recovery bundle.
+  # Never push blocked content or silently mark it completed.
+  git bundle create "$archive/work.bundle" "refs/heads/$branch"
+  printf 'Task: %s\nBranch: %s\nReason: %s\n' "$task" "$branch" "$reason" > "$archive/status.txt"
+  sed -i "s/| $task |\\([^|]*\\)| [^|]* |/| $task |\\1| blocked |/" "$queue"
+  printf '\n- %s: %s publication blocked: %s Private recovery: %s.\n' \
+    "$(date -u +%FT%TZ)" "$task" "$reason" "$archive" >> "$queue"
+  git switch --detach origin/main
+  echo "Task $task preserved privately and blocked. Next tick can select another ready task."
+}
+
 publish_for_review() {
   local branch task url
   branch=$(git branch --show-current)
@@ -27,7 +42,10 @@ publish_for_review() {
   task=${BASH_REMATCH[1]}
   # This repository is public. Scan only unpublished work, redact findings,
   # and stop before any push if potential credentials are detected.
-  gitleaks git --redact --log-opts="origin/main..HEAD" "$repo"
+  if ! gitleaks git --redact --log-opts="origin/main..HEAD" "$repo"; then
+    block_publication "Secret scan failed; inspect privately before retrying."
+    return 0
+  fi
   url=$(gh pr list --repo mhumeSF/nix-media --head "$branch" --state all \
     --json url --jq '.[0].url // empty')
   if [[ -n "$url" ]]; then
@@ -35,8 +53,8 @@ publish_for_review() {
     return 0
   fi
   if git diff --name-only origin/main...HEAD | grep -Ei '(^|/)(docs|plans|reports|run-notes)(/|$)|(^|/)(TODO|PLAN|NOTES)(\.|$)|\.(md|log|jsonl)$'; then
-    echo "Publication blocked: planning/documentation/log files must remain private."
-    return 1
+    block_publication "Planning/documentation/log files must remain private."
+    return 0
   fi
   # The wrapper publishes only its own task branch, never main or a force-push.
   # Retry on the next timer invocation if pushing or PR creation fails.
