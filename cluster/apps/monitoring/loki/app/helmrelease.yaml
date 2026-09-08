@@ -20,3 +20,14 @@ spec:
     remediation:
       retries: 5
   values:
+    loki:
+      persistence:
+        enabled: true
+        storageClassName: local-path
+        accessModes:
+        - ReadWriteOnce
+        size: 10Gi
+      config:
+        table_manager:
+          retention_deletes_enabled: true
+          retention_period: 168h

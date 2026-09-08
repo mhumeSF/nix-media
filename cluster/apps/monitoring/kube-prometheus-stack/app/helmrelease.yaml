@@ -31,6 +31,17 @@ spec:
       ingress:
         enabled: false
       prometheusSpec:
+        retention: 30d
+        retentionSize: 25GB
+        storageSpec:
+          volumeClaimTemplate:
+            spec:
+              storageClassName: local-path
+              accessModes:
+              - ReadWriteOnce
+              resources:
+                requests:
+                  storage: 30Gi
         ruleSelector: {}
         ruleNamespaceSelector: {}
         ruleSelectorNilUsesHelmValues: false
