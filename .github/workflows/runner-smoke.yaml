@@ -7,13 +7,13 @@ permissions:
 
 jobs:
   smoke:
-    name: In-cluster runner smoke test
-    runs-on: k3s
+    name: GitHub-hosted runner smoke test
+    runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
     - name: Report runner environment
       run: |
-        echo "Hello from the k3s ARC runner"
+        echo "Hello from the GitHub-hosted Ubuntu runner"
         uname -a
         nproc
-        df -h /home/runner/_work
+        df -h "$GITHUB_WORKSPACE"
