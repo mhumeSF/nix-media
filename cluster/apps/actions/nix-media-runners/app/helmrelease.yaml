@@ -16,8 +16,9 @@ spec:
     githubConfigSecret: gato-bot-github-app
     # `runs-on: k3s` in workflows targets these runners
     runnerScaleSetName: k3s
+    # This public repository uses GitHub-hosted runners; keep ARC drained.
     minRunners: 0
-    maxRunners: 3
+    maxRunners: 0
     controllerServiceAccount:
       name: arc-gha-rs-controller
       namespace: actions
