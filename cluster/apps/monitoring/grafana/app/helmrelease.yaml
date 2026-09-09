@@ -38,7 +38,11 @@ spec:
       auth.basic:
         disable_login_form: true
     persistence:
-      enabled: false
+      enabled: true
+      storageClassName: local-path
+      accessModes:
+      - ReadWriteOnce
+      size: 5Gi
     ingress:
       enabled: false
     sidecar:

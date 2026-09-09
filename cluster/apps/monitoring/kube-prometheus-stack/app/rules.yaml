@@ -1,0 +1,28 @@
+---
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: home-server-health
+  namespace: monitoring
+spec:
+  groups:
+  - name: backup.rules
+    rules:
+    - alert: ArchiveBackupFailed
+      expr: kube_job_status_failed{namespace="backup",job_name=~"rclone-sync-.*"} > 0
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        summary: The archive backup job failed
+        description: The hourly rclone archive upload has a failed Job.
+    - alert: ArchiveBackupStale
+      expr: >-
+        (time() - kube_cronjob_status_last_successful_time{namespace="backup",cronjob="rclone-sync"} > 2 * 60 * 60)
+        or absent(kube_cronjob_status_last_successful_time{namespace="backup",cronjob="rclone-sync"})
+      for: 15m
+      labels:
+        severity: critical
+      annotations:
+        summary: The archive backup has not succeeded recently
+        description: The hourly rclone archive upload has never succeeded or has not succeeded in more than two hours.
