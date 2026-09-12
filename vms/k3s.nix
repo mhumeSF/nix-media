@@ -77,6 +77,13 @@ in {
         size = 131072;
         fsType = "ext4";
       }
+      {
+        image = "/tank0/vm-disks/${config.networking.hostName}/loki.img";
+        mountPoint = "/var/lib/loki-storage";
+        label = "k3s-loki";
+        size = 32768;
+        fsType = "ext4";
+      }
     ];
 
     interfaces = [{
@@ -162,7 +169,29 @@ in {
 
   systemd.services.k3s = {
     wants = [ "etcd.service" ];
-    after = [ "etcd.service" ];
+    requires = [ "monitoring-storage.service" ];
+    after = [ "etcd.service" "monitoring-storage.service" ];
+  };
+
+  # Existing monitoring PVs retain their immutable hostPath. Bind their
+  # migrated directories back onto those paths before kubelet starts.
+  systemd.services.monitoring-storage = {
+    requires = [ "var-lib-rancher-k3s-storage.mount" "var-lib-loki\\x2dstorage.mount" ];
+    after = [ "var-lib-rancher-k3s-storage.mount" "var-lib-loki\\x2dstorage.mount" ];
+    before = [ "k3s.service" ];
+    path = [ pkgs.coreutils pkgs.util-linux ];
+    serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
+    script = ''
+      mkdir -p /var/lib/loki-storage/loki
+      chown 10001:10001 /var/lib/loki-storage/loki
+      chmod 0750 /var/lib/loki-storage/loki
+      for source in /var/lib/rancher/k3s/storage/monitoring/pvc-*_monitoring_*; do
+        [ -d "$source" ] || continue
+        target="/opt/local-path-provisioner/$(basename "$source")"
+        mkdir -p "$target"
+        mountpoint -q "$target" || mount --bind "$source" "$target"
+      done
+    '';
   };
 
   services.k3s.enable = true;

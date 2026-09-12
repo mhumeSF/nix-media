@@ -23,7 +23,7 @@ spec:
     loki:
       persistence:
         enabled: true
-        storageClassName: local-path
+        existingClaim: loki-hdd
         accessModes:
         - ReadWriteOnce
         size: 10Gi
