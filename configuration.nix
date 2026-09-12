@@ -124,12 +124,18 @@
       requires = [ "sys-subsystem-net-devices-bridge.device" ];
     };
   in {
+    "microvm@k3s" = {
+      overrideStrategy = "asDropin";
+      unitConfig.RequiresMountsFor = [ "/tank0/vm-disks/k3s" ];
+    };
     "microvm-macvtap-interfaces@k3s"      = afterBridge;
     "microvm-macvtap-interfaces@vmrouter" = afterBridge;
   };
 
   # Microvm directories (must exist before virtiofsd starts)
   systemd.tmpfiles.rules = [
+    "d /tank0/vm-disks 0750 microvm kvm -"
+    "d /tank0/vm-disks/k3s 0750 microvm kvm -"
     "d /var/lib/microvms/k3s 0755 microvm kvm -"
     "d /var/lib/microvms/k3s/volumes 0755 microvm kvm -"
     "d /var/lib/microvms/k3s/persist 0755 root root -"

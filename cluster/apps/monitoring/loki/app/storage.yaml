@@ -1,0 +1,33 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: loki-hdd
+spec:
+  capacity:
+    storage: 30Gi
+  volumeMode: Filesystem
+  accessModes: [ReadWriteOnce]
+  persistentVolumeReclaimPolicy: Retain
+  storageClassName: ""
+  local:
+    path: /var/lib/loki-storage/loki
+  nodeAffinity:
+    required:
+      nodeSelectorTerms:
+      - matchExpressions:
+        - key: kubernetes.io/hostname
+          operator: In
+          values: [k3s]
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: loki-hdd
+  namespace: monitoring
+spec:
+  accessModes: [ReadWriteOnce]
+  storageClassName: ""
+  volumeName: loki-hdd
+  resources:
+    requests:
+      storage: 30Gi
