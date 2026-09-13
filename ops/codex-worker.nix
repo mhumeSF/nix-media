@@ -1,10 +1,10 @@
-# Host maintenance worker; scheduling stays off until the first smoke test.
+# Host maintenance worker; attempt one task every thirty minutes.
 { pkgs, unstable, ... }:
 let
   runner = pkgs.writeShellApplication {
     name = "codex-one-task";
     runtimeInputs = with pkgs; [
-      bash coreutils util-linux git gh gawk nix kustomize kubectl
+      bash coreutils util-linux git gh gitleaks gawk nix kustomize kubectl
       kubernetes-helm python3 ripgrep openssh cacert unstable.codex
     ];
     text = builtins.readFile ./codex-one-task.sh;
@@ -50,10 +50,10 @@ in {
     };
   };
   systemd.timers.codex-maintenance = {
-    # Deliberately no wantedBy: start the timer manually after the smoke test.
+    wantedBy = [ "timers.target" ];
     timerConfig = {
-      OnCalendar = "*-*-* 00,06,12,18:00:00";
-      RandomizedDelaySec = "10min";
+      OnCalendar = "*-*-* *:00,30:00";
+      RandomizedDelaySec = "0";
       Persistent = false;
       Unit = "codex-maintenance.service";
     };

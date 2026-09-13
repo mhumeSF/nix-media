@@ -77,6 +77,13 @@ in {
         size = 131072;
         fsType = "ext4";
       }
+      {
+        image = "/tank0/vm-disks/${config.networking.hostName}/loki.img";
+        mountPoint = "/var/lib/loki-storage";
+        label = "k3s-loki";
+        size = 32768;
+        fsType = "ext4";
+      }
     ];
 
     interfaces = [{
@@ -153,16 +160,51 @@ in {
   services.etcd = {
     enable = true;
     package = unstable.etcd;
+    dataDir = "/var/lib/rancher/k3s/storage/cluster-state/etcd";
   };
 
   systemd.services.etcd = {
     wants = [ "network-online.target" ];
-    after = [ "network-online.target" ];
+    requires = [ "persistent-cluster-storage.service" ];
+    after = [ "network-online.target" "persistent-cluster-storage.service" ];
   };
 
   systemd.services.k3s = {
     wants = [ "etcd.service" ];
-    after = [ "etcd.service" ];
+    requires = [ "persistent-cluster-storage.service" ];
+    after = [ "etcd.service" "persistent-cluster-storage.service" ];
+  };
+
+  # Keep etcd, k3s identity, and workload storage available before the control
+  # plane starts. Legacy monitoring PVs retain their immutable hostPaths.
+  systemd.services.persistent-cluster-storage = {
+    requires = [ "var-lib-rancher-k3s-storage.mount" "var-lib-loki\\x2dstorage.mount" ];
+    after = [ "var-lib-rancher-k3s-storage.mount" "var-lib-loki\\x2dstorage.mount" ];
+    before = [ "etcd.service" "k3s.service" ];
+    path = [ pkgs.coreutils pkgs.util-linux ];
+    serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
+    script = ''
+      mkdir -p /var/lib/rancher/k3s/storage/cluster-state/etcd
+      chown etcd:etcd /var/lib/rancher/k3s/storage/cluster-state/etcd
+      chmod 0700 /var/lib/rancher/k3s/storage/cluster-state/etcd
+
+      server=/var/lib/rancher/k3s/storage/cluster-state/server
+      mkdir -p "$server/manifests" /var/lib/rancher/k3s/server
+      mountpoint -q /var/lib/rancher/k3s/server || mount --bind "$server" /var/lib/rancher/k3s/server
+      ln -sfn ${gotk-components} "$server/manifests/gotk-components.yaml"
+      ln -sfn ${gotk-sync} "$server/manifests/gotk-sync.yaml"
+      ln -sfn /run/agenix/k8s-sops-key "$server/manifests/k8s-sops-key.yaml"
+
+      mkdir -p /var/lib/loki-storage/loki
+      chown 10001:10001 /var/lib/loki-storage/loki
+      chmod 0750 /var/lib/loki-storage/loki
+      for source in /var/lib/rancher/k3s/storage/monitoring/pvc-*_monitoring_*; do
+        [ -d "$source" ] || continue
+        target="/opt/local-path-provisioner/$(basename "$source")"
+        mkdir -p "$target"
+        mountpoint -q "$target" || mount --bind "$source" "$target"
+      done
+    '';
   };
 
   services.k3s.enable = true;

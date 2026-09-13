@@ -37,8 +37,20 @@ spec:
         enabled: true
       auth.basic:
         disable_login_form: true
+    initChownData:
+      securityContext:
+        capabilities:
+          add:
+          - CHOWN
+          - DAC_OVERRIDE
+          drop:
+          - ALL
     persistence:
-      enabled: false
+      enabled: true
+      storageClassName: local-path
+      accessModes:
+      - ReadWriteOnce
+      size: 5Gi
     ingress:
       enabled: false
     sidecar:

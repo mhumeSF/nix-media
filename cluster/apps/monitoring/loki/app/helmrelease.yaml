@@ -20,3 +20,15 @@ spec:
     remediation:
       retries: 5
   values:
+    loki:
+      persistence:
+        enabled: true
+        existingClaim: loki-hdd
+        accessModes:
+        - ReadWriteOnce
+        size: 10Gi
+      config:
+        limits_config:
+          retention_period: 168h
+        compactor:
+          retention_enabled: true

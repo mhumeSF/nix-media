@@ -3,8 +3,9 @@
 # Path is on the `gato-bucket` virtiofs share (VM: /gato-bucket/photos/archive
 # -> host media.local: /tank0/gato-bucket/photos/archive). nodeAffinity pins the
 # claim (and therefore the rclone pod) to the node that has this share. This is
-# critical: `rclone sync` mirrors and DELETES, so a pod scheduled on a node
-# without this data would prune the remote bucket.
+# critical: the backup job must never interpret a missing mount as a request to
+# delete the remote archive. `rclone copy` uploads new and changed objects but
+# deliberately leaves remote objects that are absent from the source.
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -43,11 +44,11 @@ spec:
       storage: 100Gi
 ---
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
   name: rclone-config
   namespace: backup
-data:
+stringData:
   rclone.conf: |
     [b2]
     type = b2
@@ -71,9 +72,9 @@ spec:
           restartPolicy: OnFailure
           containers:
           - name: rclone
-            image: rclone/rclone:latest
+            image: rclone/rclone:1.75.1
             args:
-            - sync
+            - copy
             - /data
             - b2:${B2_BUCKET}
             - --verbose
@@ -90,5 +91,5 @@ spec:
             persistentVolumeClaim:
               claimName: photos-archive-pvc
           - name: rclone-config
-            configMap:
-              name: rclone-config
+            secret:
+              secretName: rclone-config
