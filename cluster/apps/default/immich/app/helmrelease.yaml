@@ -42,9 +42,13 @@ spec:
 
     server:
       enabled: true
-      image:
-        repository: ghcr.io/immich-app/immich-server
-        tag: v3.2.0
+      controllers:
+        main:
+          containers:
+            main:
+              image:
+                repository: ghcr.io/immich-app/immich-server
+                tag: v3.2.0
       # Photo-workflow external libraries. Immich indexes these as External
       # Libraries; mounted read-only so Immich never modifies the originals.
       # The server pod also runs the microservices/background jobs in Immich
@@ -78,9 +82,13 @@ spec:
 
     machine-learning:
       enabled: true
-      image:
-        repository: ghcr.io/immich-app/immich-machine-learning
-        tag: v3.2.0
+      controllers:
+        main:
+          containers:
+            main:
+              image:
+                repository: ghcr.io/immich-app/immich-machine-learning
+                tag: v3.2.0
       persistence:
         cache:
           enabled: true
