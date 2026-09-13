@@ -160,28 +160,41 @@ in {
   services.etcd = {
     enable = true;
     package = unstable.etcd;
+    dataDir = "/var/lib/rancher/k3s/storage/cluster-state/etcd";
   };
 
   systemd.services.etcd = {
     wants = [ "network-online.target" ];
-    after = [ "network-online.target" ];
+    requires = [ "persistent-cluster-storage.service" ];
+    after = [ "network-online.target" "persistent-cluster-storage.service" ];
   };
 
   systemd.services.k3s = {
     wants = [ "etcd.service" ];
-    requires = [ "monitoring-storage.service" ];
-    after = [ "etcd.service" "monitoring-storage.service" ];
+    requires = [ "persistent-cluster-storage.service" ];
+    after = [ "etcd.service" "persistent-cluster-storage.service" ];
   };
 
-  # Existing monitoring PVs retain their immutable hostPath. Bind their
-  # migrated directories back onto those paths before kubelet starts.
-  systemd.services.monitoring-storage = {
+  # Keep etcd, k3s identity, and workload storage available before the control
+  # plane starts. Legacy monitoring PVs retain their immutable hostPaths.
+  systemd.services.persistent-cluster-storage = {
     requires = [ "var-lib-rancher-k3s-storage.mount" "var-lib-loki\\x2dstorage.mount" ];
     after = [ "var-lib-rancher-k3s-storage.mount" "var-lib-loki\\x2dstorage.mount" ];
-    before = [ "k3s.service" ];
+    before = [ "etcd.service" "k3s.service" ];
     path = [ pkgs.coreutils pkgs.util-linux ];
     serviceConfig = { Type = "oneshot"; RemainAfterExit = true; };
     script = ''
+      mkdir -p /var/lib/rancher/k3s/storage/cluster-state/etcd
+      chown etcd:etcd /var/lib/rancher/k3s/storage/cluster-state/etcd
+      chmod 0700 /var/lib/rancher/k3s/storage/cluster-state/etcd
+
+      server=/var/lib/rancher/k3s/storage/cluster-state/server
+      mkdir -p "$server/manifests" /var/lib/rancher/k3s/server
+      mountpoint -q /var/lib/rancher/k3s/server || mount --bind "$server" /var/lib/rancher/k3s/server
+      ln -sfn ${gotk-components} "$server/manifests/gotk-components.yaml"
+      ln -sfn ${gotk-sync} "$server/manifests/gotk-sync.yaml"
+      ln -sfn /run/agenix/k8s-sops-key "$server/manifests/k8s-sops-key.yaml"
+
       mkdir -p /var/lib/loki-storage/loki
       chown 10001:10001 /var/lib/loki-storage/loki
       chmod 0750 /var/lib/loki-storage/loki
