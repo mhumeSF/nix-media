@@ -92,14 +92,14 @@ spec:
     persistence:
       data:
         enabled: true
-        hostPath: /omada/data
+        hostPath: /var/lib/rancher/k3s/storage/omada/data
         type: hostPath
         globalMounts:
         - path: /opt/tplink/EAPController/data
           readOnly: false
       logs:
         enabled: true
-        hostPath: /omada/logs
+        hostPath: /var/lib/rancher/k3s/storage/omada/logs
         type: hostPath
         globalMounts:
         - path: /opt/tplink/EAPController/logs
