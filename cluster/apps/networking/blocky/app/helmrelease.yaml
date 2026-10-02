@@ -39,7 +39,7 @@ spec:
     controller:
       replicas: 1
     podAnnotations:
-      checksum/config: "8e95f02f65a97912031c2bfbc23aeb6a90a7e6a3c75dfa5f26770f42d01b09c8"
+      checksum/config: "0e408fae05d60108b91b4a7e07badeb016911be4d5cad657b88435676cdab972"
     metrics:
       enabled: false
       serviceMonitor:
@@ -56,13 +56,11 @@ spec:
         mapping:
           ${CLUSTER_DOMAIN}: k8s-gateway.networking.svc.cluster.local
       blocking:
+        refreshPeriod: 4h
         blackLists:
           ads:
           - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-          - https://s3.amazonaws.com/lists.disconnect.me/simple_ad.txt
-          - http://sysctl.org/cameleon/hosts
-          - https://s3.amazonaws.com/lists.disconnect.me/simple_tracking.txt
-          - https://dbl.oisd.nl/
+          - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi-onlydomains.txt
         clientGroupsBlock:
           default:
             - ads
