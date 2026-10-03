@@ -198,7 +198,7 @@ spec:
               "title": "Speedtest Dashboard",
               "description": "Dashboard for Speedtest Exporter https://github.com/MiguelNdeCarvalho/speedtest-exporter",
               "schemaVersion": 39,
-              "version": 6,
+              "version": 7,
               "editable": true,
               "graphTooltip": 0,
               "panels": [
@@ -332,13 +332,13 @@ spec:
                 },
                 {
                   "id": 4,
-                  "title": "Ping",
+                  "title": "Ping and Jitter",
                   "type": "timeseries",
                   "datasource": "Prometheus",
                   "description": "One bar per hourly test, with touching bars and visible outlines.",
                   "gridPos": {
                     "h": 9,
-                    "w": 12,
+                    "w": 24,
                     "x": 0,
                     "y": 9
                   },
@@ -348,8 +348,7 @@ spec:
                       "unit": "ms",
                       "min": 0,
                       "color": {
-                        "mode": "fixed",
-                        "fixedColor": "green"
+                        "mode": "palette-classic"
                       },
                       "custom": {
                         "drawStyle": "bars",
@@ -366,7 +365,38 @@ spec:
                         }
                       }
                     },
-                    "overrides": []
+                    "overrides": [
+                      {
+                        "matcher": {
+                          "id": "byName",
+                          "options": "Ping (ms)"
+                        },
+                        "properties": [
+                          {
+                            "id": "color",
+                            "value": {
+                              "mode": "fixed",
+                              "fixedColor": "green"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "matcher": {
+                          "id": "byName",
+                          "options": "Jitter (ms)"
+                        },
+                        "properties": [
+                          {
+                            "id": "color",
+                            "value": {
+                              "mode": "fixed",
+                              "fixedColor": "orange"
+                            }
+                          }
+                        ]
+                      }
+                    ]
                   },
                   "options": {
                     "legend": {
@@ -379,7 +409,7 @@ spec:
                       ]
                     },
                     "tooltip": {
-                      "mode": "single",
+                      "mode": "multi",
                       "sort": "none"
                     }
                   },
@@ -391,68 +421,12 @@ spec:
                       "refId": "A",
                       "range": true,
                       "instant": false
-                    }
-                  ]
-                },
-                {
-                  "id": 5,
-                  "title": "Jitter",
-                  "type": "timeseries",
-                  "datasource": "Prometheus",
-                  "description": "One bar per hourly test, with touching bars and visible outlines.",
-                  "gridPos": {
-                    "h": 9,
-                    "w": 12,
-                    "x": 12,
-                    "y": 9
-                  },
-                  "interval": "1h",
-                  "fieldConfig": {
-                    "defaults": {
-                      "unit": "ms",
-                      "min": 0,
-                      "color": {
-                        "mode": "fixed",
-                        "fixedColor": "orange"
-                      },
-                      "custom": {
-                        "drawStyle": "bars",
-                        "barAlignment": -1,
-                        "barWidthFactor": 1,
-                        "lineWidth": 2,
-                        "fillOpacity": 35,
-                        "gradientMode": "none",
-                        "showPoints": "never",
-                        "spanNulls": false,
-                        "stacking": {
-                          "mode": "none",
-                          "group": "A"
-                        }
-                      }
                     },
-                    "overrides": []
-                  },
-                  "options": {
-                    "legend": {
-                      "displayMode": "table",
-                      "placement": "bottom",
-                      "calcs": [
-                        "min",
-                        "mean",
-                        "max"
-                      ]
-                    },
-                    "tooltip": {
-                      "mode": "single",
-                      "sort": "none"
-                    }
-                  },
-                  "targets": [
                     {
                       "expr": "last_over_time(speedtest_jitter_latency_milliseconds[1h])",
                       "interval": "1h",
                       "legendFormat": "Jitter (ms)",
-                      "refId": "A",
+                      "refId": "B",
                       "range": true,
                       "instant": false
                     }
