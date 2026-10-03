@@ -161,6 +161,9 @@ in {
     enable = true;
     package = unstable.etcd;
     dataDir = "/var/lib/rancher/k3s/storage/cluster-state/etcd";
+    # Prometheus reaches this through the trusted Cilium interfaces. Keep the
+    # datastore client API on loopback and the metrics port closed to the LAN.
+    extraConf.LISTEN_METRICS_URLS = "http://0.0.0.0:2381";
   };
 
   systemd.services.etcd = {

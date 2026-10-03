@@ -192,9 +192,227 @@ spec:
           datasource: Prometheus
         # Ref: https://grafana.com/grafana/dashboards/13665
         speedtest:
-          gnetId: 13665
-          revision: 1
-          datasource: Prometheus
+          json: |
+            {
+              "uid": "-fs18ztMz",
+              "title": "Speedtest Dashboard",
+              "description": "Dashboard for Speedtest Exporter https://github.com/MiguelNdeCarvalho/speedtest-exporter",
+              "schemaVersion": 39,
+              "version": 5,
+              "editable": true,
+              "graphTooltip": 0,
+              "panels": [
+                {
+                  "id": 4,
+                  "title": "Ping and Jitter (ms)",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 8,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "interval": "6h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ms",
+                      "min": 0,
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": 0,
+                        "barWidthFactor": 1,
+                        "lineWidth": 0,
+                        "fillOpacity": 100,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "multi",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_ping_latency_milliseconds[6h])",
+                      "interval": "6h",
+                      "legendFormat": "Ping (ms)",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    },
+                    {
+                      "expr": "last_over_time(speedtest_jitter_latency_milliseconds[6h])",
+                      "interval": "6h",
+                      "legendFormat": "Jitter (ms)",
+                      "refId": "B",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                },
+                {
+                  "id": 2,
+                  "title": "Download Speed",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 8,
+                    "x": 8,
+                    "y": 0
+                  },
+                  "interval": "6h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "bps",
+                      "min": 0,
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": 0,
+                        "barWidthFactor": 1,
+                        "lineWidth": 0,
+                        "fillOpacity": 100,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "multi",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_download_bits_per_second[6h])",
+                      "interval": "6h",
+                      "legendFormat": "Download",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                },
+                {
+                  "id": 3,
+                  "title": "Upload Speed",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 8,
+                    "x": 16,
+                    "y": 0
+                  },
+                  "interval": "6h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "bps",
+                      "min": 0,
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": 0,
+                        "barWidthFactor": 1,
+                        "lineWidth": 0,
+                        "fillOpacity": 100,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "multi",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_upload_bits_per_second[6h])",
+                      "interval": "6h",
+                      "legendFormat": "Upload",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                }
+              ],
+              "time": {
+                "from": "now-2d",
+                "to": "now"
+              },
+              "timezone": "browser",
+              "refresh": "5m",
+              "tags": [
+                "networking"
+              ],
+              "templating": {
+                "list": []
+              }
+            }
         cert-manager:
           url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
           datasource: Prometheus
