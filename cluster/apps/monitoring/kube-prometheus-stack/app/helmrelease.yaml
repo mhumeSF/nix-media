@@ -55,6 +55,25 @@ spec:
         podMonitorSelector: {}
         podMonitorNamespaceSelector: {}
         podMonitorSelectorNilUsesHelmValues: false
+        additionalScrapeConfigs:
+        # etcd is a NixOS service on the control-plane VM, not an etcd pod.
+        - job_name: kube-etcd
+          scrape_interval: 30s
+          kubernetes_sd_configs:
+          - role: node
+          relabel_configs:
+          - source_labels: [__meta_kubernetes_node_label_node_role_kubernetes_io_control_plane]
+            regex: "true"
+            action: keep
+          - source_labels: [__meta_kubernetes_node_address_InternalIP]
+            target_label: __address__
+            replacement: "$1:2381"
+          - target_label: job
+            replacement: kube-etcd
+          - target_label: namespace
+            replacement: kube-system
+          - target_label: service
+            replacement: kube-prometheus-stack-kube-etcd
 
     kubeApiServer:
       enabled: true
@@ -62,9 +81,9 @@ spec:
     kubeEtcd:
       enabled: true
       service:
-        enabled: true
-        port: 2379
-        targetPort: 2379
+        enabled: false
+      serviceMonitor:
+        enabled: false
 
     kubelet:
       enabled: true
