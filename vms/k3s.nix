@@ -131,6 +131,9 @@ in {
         8472  # cilium vxlan
       ];
       trustedInterfaces = [ "cilium_+" "lxc+" ];
+      extraInputRules = ''
+        iifname { "cilium_*", "lxc*" } ip saddr 10.42.0.0/16 tcp dport 2381 accept comment "etcd metrics from cluster pods"
+      '';
     };
   };
 

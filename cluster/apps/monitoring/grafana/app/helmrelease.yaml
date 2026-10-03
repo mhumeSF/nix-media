@@ -198,81 +198,10 @@ spec:
               "title": "Speedtest Dashboard",
               "description": "Dashboard for Speedtest Exporter https://github.com/MiguelNdeCarvalho/speedtest-exporter",
               "schemaVersion": 39,
-              "version": 5,
+              "version": 6,
               "editable": true,
               "graphTooltip": 0,
               "panels": [
-                {
-                  "id": 4,
-                  "title": "Ping and Jitter (ms)",
-                  "type": "timeseries",
-                  "datasource": "Prometheus",
-                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
-                  "gridPos": {
-                    "h": 9,
-                    "w": 8,
-                    "x": 0,
-                    "y": 0
-                  },
-                  "interval": "6h",
-                  "fieldConfig": {
-                    "defaults": {
-                      "unit": "ms",
-                      "min": 0,
-                      "color": {
-                        "mode": "palette-classic"
-                      },
-                      "custom": {
-                        "drawStyle": "bars",
-                        "barAlignment": 0,
-                        "barWidthFactor": 1,
-                        "lineWidth": 0,
-                        "fillOpacity": 100,
-                        "gradientMode": "none",
-                        "showPoints": "never",
-                        "spanNulls": false,
-                        "stacking": {
-                          "mode": "none",
-                          "group": "A"
-                        }
-                      }
-                    },
-                    "overrides": []
-                  },
-                  "options": {
-                    "legend": {
-                      "displayMode": "table",
-                      "placement": "bottom",
-                      "calcs": [
-                        "min",
-                        "mean",
-                        "max"
-                      ]
-                    },
-                    "tooltip": {
-                      "mode": "multi",
-                      "sort": "none"
-                    }
-                  },
-                  "targets": [
-                    {
-                      "expr": "last_over_time(speedtest_ping_latency_milliseconds[6h])",
-                      "interval": "6h",
-                      "legendFormat": "Ping (ms)",
-                      "refId": "A",
-                      "range": true,
-                      "instant": false
-                    },
-                    {
-                      "expr": "last_over_time(speedtest_jitter_latency_milliseconds[6h])",
-                      "interval": "6h",
-                      "legendFormat": "Jitter (ms)",
-                      "refId": "B",
-                      "range": true,
-                      "instant": false
-                    }
-                  ]
-                },
                 {
                   "id": 2,
                   "title": "Download Speed",
@@ -281,8 +210,8 @@ spec:
                   "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
                   "gridPos": {
                     "h": 9,
-                    "w": 8,
-                    "x": 8,
+                    "w": 12,
+                    "x": 0,
                     "y": 0
                   },
                   "interval": "6h",
@@ -291,14 +220,15 @@ spec:
                       "unit": "bps",
                       "min": 0,
                       "color": {
-                        "mode": "palette-classic"
+                        "mode": "fixed",
+                        "fixedColor": "blue"
                       },
                       "custom": {
                         "drawStyle": "bars",
-                        "barAlignment": 0,
+                        "barAlignment": -1,
                         "barWidthFactor": 1,
-                        "lineWidth": 0,
-                        "fillOpacity": 100,
+                        "lineWidth": 2,
+                        "fillOpacity": 35,
                         "gradientMode": "none",
                         "showPoints": "never",
                         "spanNulls": false,
@@ -321,7 +251,7 @@ spec:
                       ]
                     },
                     "tooltip": {
-                      "mode": "multi",
+                      "mode": "single",
                       "sort": "none"
                     }
                   },
@@ -344,8 +274,8 @@ spec:
                   "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
                   "gridPos": {
                     "h": 9,
-                    "w": 8,
-                    "x": 16,
+                    "w": 12,
+                    "x": 12,
                     "y": 0
                   },
                   "interval": "6h",
@@ -354,14 +284,15 @@ spec:
                       "unit": "bps",
                       "min": 0,
                       "color": {
-                        "mode": "palette-classic"
+                        "mode": "fixed",
+                        "fixedColor": "purple"
                       },
                       "custom": {
                         "drawStyle": "bars",
-                        "barAlignment": 0,
+                        "barAlignment": -1,
                         "barWidthFactor": 1,
-                        "lineWidth": 0,
-                        "fillOpacity": 100,
+                        "lineWidth": 2,
+                        "fillOpacity": 35,
                         "gradientMode": "none",
                         "showPoints": "never",
                         "spanNulls": false,
@@ -384,7 +315,7 @@ spec:
                       ]
                     },
                     "tooltip": {
-                      "mode": "multi",
+                      "mode": "single",
                       "sort": "none"
                     }
                   },
@@ -393,6 +324,134 @@ spec:
                       "expr": "last_over_time(speedtest_upload_bits_per_second[6h])",
                       "interval": "6h",
                       "legendFormat": "Upload",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                },
+                {
+                  "id": 4,
+                  "title": "Ping",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 12,
+                    "x": 0,
+                    "y": 9
+                  },
+                  "interval": "6h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ms",
+                      "min": 0,
+                      "color": {
+                        "mode": "fixed",
+                        "fixedColor": "green"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": -1,
+                        "barWidthFactor": 1,
+                        "lineWidth": 2,
+                        "fillOpacity": 35,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_ping_latency_milliseconds[6h])",
+                      "interval": "6h",
+                      "legendFormat": "Ping (ms)",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                },
+                {
+                  "id": 5,
+                  "title": "Jitter",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 12,
+                    "x": 12,
+                    "y": 9
+                  },
+                  "interval": "6h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ms",
+                      "min": 0,
+                      "color": {
+                        "mode": "fixed",
+                        "fixedColor": "orange"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": -1,
+                        "barWidthFactor": 1,
+                        "lineWidth": 2,
+                        "fillOpacity": 35,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_jitter_latency_milliseconds[6h])",
+                      "interval": "6h",
+                      "legendFormat": "Jitter (ms)",
                       "refId": "A",
                       "range": true,
                       "instant": false
