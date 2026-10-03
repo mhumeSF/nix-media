@@ -100,24 +100,6 @@ spec:
           allowUiUpdates: true
           options:
             path: /var/lib/grafana/dashboards/flux
-        - name: "loki"
-          orgId: 1
-          folder: "loki"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/loki
-        - name: "media"
-          orgId: 1
-          folder: "media"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/media
         - name: "networking"
           orgId: 1
           folder: "networking"
@@ -127,24 +109,6 @@ spec:
           allowUiUpdates: true
           options:
             path: /var/lib/grafana/dashboards/networking
-        - name: "power"
-          orgId: 1
-          folder: "power"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/power
-        - name: "storage"
-          orgId: 1
-          folder: "storage"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/storage
         - name: "argo"
           orgId: 1
           folder: "argo"
@@ -208,6 +172,9 @@ spec:
           datasource: Prometheus
 
       networking:
+        blocky:
+          url: https://raw.githubusercontent.com/0xERR0R/blocky/main/docs/blocky-grafana.json
+          datasource: Prometheus
         cert-manager:
           url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
           datasource: Prometheus
