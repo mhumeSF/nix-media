@@ -37,17 +37,19 @@ spec:
             protocol: UDP
             targetPort: 53
     controller:
-      replicas: 1
+      replicas: 2
     podAnnotations:
-      checksum/config: "0e408fae05d60108b91b4a7e07badeb016911be4d5cad657b88435676cdab972"
+      checksum/config: "blocky-metrics-ha-2026-10-03"
     metrics:
-      enabled: false
+      enabled: true
       serviceMonitor:
         interval: 30s
         scrapeTimeout: 10s
       prometheusRule:
         enabled: true
     config: |
+      prometheus:
+        enable: true
       upstream:
         default:
           - 1.1.1.1
