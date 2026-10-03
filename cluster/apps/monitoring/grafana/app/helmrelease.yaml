@@ -207,14 +207,14 @@ spec:
                   "title": "Download Speed",
                   "type": "timeseries",
                   "datasource": "Prometheus",
-                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "description": "One bar per hourly test, with touching bars and visible outlines.",
                   "gridPos": {
                     "h": 9,
                     "w": 12,
                     "x": 0,
                     "y": 0
                   },
-                  "interval": "6h",
+                  "interval": "1h",
                   "fieldConfig": {
                     "defaults": {
                       "unit": "bps",
@@ -257,8 +257,8 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "last_over_time(speedtest_download_bits_per_second[6h])",
-                      "interval": "6h",
+                      "expr": "last_over_time(speedtest_download_bits_per_second[1h])",
+                      "interval": "1h",
                       "legendFormat": "Download",
                       "refId": "A",
                       "range": true,
@@ -271,14 +271,14 @@ spec:
                   "title": "Upload Speed",
                   "type": "timeseries",
                   "datasource": "Prometheus",
-                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "description": "One bar per hourly test, with touching bars and visible outlines.",
                   "gridPos": {
                     "h": 9,
                     "w": 12,
                     "x": 12,
                     "y": 0
                   },
-                  "interval": "6h",
+                  "interval": "1h",
                   "fieldConfig": {
                     "defaults": {
                       "unit": "bps",
@@ -321,8 +321,8 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "last_over_time(speedtest_upload_bits_per_second[6h])",
-                      "interval": "6h",
+                      "expr": "last_over_time(speedtest_upload_bits_per_second[1h])",
+                      "interval": "1h",
                       "legendFormat": "Upload",
                       "refId": "A",
                       "range": true,
@@ -335,14 +335,14 @@ spec:
                   "title": "Ping",
                   "type": "timeseries",
                   "datasource": "Prometheus",
-                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "description": "One bar per hourly test, with touching bars and visible outlines.",
                   "gridPos": {
                     "h": 9,
                     "w": 12,
                     "x": 0,
                     "y": 9
                   },
-                  "interval": "6h",
+                  "interval": "1h",
                   "fieldConfig": {
                     "defaults": {
                       "unit": "ms",
@@ -385,8 +385,8 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "last_over_time(speedtest_ping_latency_milliseconds[6h])",
-                      "interval": "6h",
+                      "expr": "last_over_time(speedtest_ping_latency_milliseconds[1h])",
+                      "interval": "1h",
                       "legendFormat": "Ping (ms)",
                       "refId": "A",
                       "range": true,
@@ -399,14 +399,14 @@ spec:
                   "title": "Jitter",
                   "type": "timeseries",
                   "datasource": "Prometheus",
-                  "description": "Each bar fills its six-hour interval and shows the latest measurement in that interval.",
+                  "description": "One bar per hourly test, with touching bars and visible outlines.",
                   "gridPos": {
                     "h": 9,
                     "w": 12,
                     "x": 12,
                     "y": 9
                   },
-                  "interval": "6h",
+                  "interval": "1h",
                   "fieldConfig": {
                     "defaults": {
                       "unit": "ms",
@@ -449,8 +449,8 @@ spec:
                   },
                   "targets": [
                     {
-                      "expr": "last_over_time(speedtest_jitter_latency_milliseconds[6h])",
-                      "interval": "6h",
+                      "expr": "last_over_time(speedtest_jitter_latency_milliseconds[1h])",
+                      "interval": "1h",
                       "legendFormat": "Jitter (ms)",
                       "refId": "A",
                       "range": true,
