@@ -208,6 +208,9 @@ spec:
           datasource: Prometheus
 
       networking:
+        blocky:
+          url: https://raw.githubusercontent.com/0xERR0R/blocky/main/docs/blocky-grafana.json
+          datasource: Prometheus
         cert-manager:
           url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
           datasource: Prometheus
