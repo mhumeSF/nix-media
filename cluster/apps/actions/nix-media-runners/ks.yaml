@@ -20,6 +20,8 @@ spec:
     namespace: actions
   decryption:
     provider: sops
+    secretRef:
+      name: sops-age
   interval: 30m
   retryInterval: 1m
   timeout: 5m
