@@ -131,6 +131,9 @@ in {
         8472  # cilium vxlan
       ];
       trustedInterfaces = [ "cilium_+" "lxc+" ];
+      extraInputRules = ''
+        iifname { "cilium_*", "lxc*" } ip saddr 10.42.0.0/16 tcp dport 2381 accept comment "etcd metrics from cluster pods"
+      '';
     };
   };
 
@@ -161,6 +164,9 @@ in {
     enable = true;
     package = unstable.etcd;
     dataDir = "/var/lib/rancher/k3s/storage/cluster-state/etcd";
+    # Prometheus reaches this through the trusted Cilium interfaces. Keep the
+    # datastore client API on loopback and the metrics port closed to the LAN.
+    extraConf.LISTEN_METRICS_URLS = "http://0.0.0.0:2381";
   };
 
   systemd.services.etcd = {

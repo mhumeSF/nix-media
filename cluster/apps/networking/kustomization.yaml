@@ -9,4 +9,5 @@ resources:
 - envoy-gateway/ks.yaml
 - k8s-gateway/ks.yaml
 - blocky/ks.yaml
+- speedtest-exporter/ks.yaml
 - omada-controller/ks.yaml

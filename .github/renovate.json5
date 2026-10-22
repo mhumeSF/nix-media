@@ -9,7 +9,7 @@
   ],
   "automerge": false,
   "automergeType": "pr",
-  "automergeStrategy": "merge",
+  "automergeStrategy": "merge-commit",
   "platformAutomerge": true,
   "flux": {
     "fileMatch": [

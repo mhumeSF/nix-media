@@ -1,0 +1,36 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: speedtest-exporter
+  namespace: networking
+  labels:
+    app: speedtest-exporter
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: speedtest-exporter
+  template:
+    metadata:
+      labels:
+        app: speedtest-exporter
+    spec:
+      containers:
+      - name: speedtest-exporter
+        # renovate: datasource=github-releases depName=MiguelNdeCarvalho/speedtest-exporter
+        image: ghcr.io/miguelndecarvalho/speedtest-exporter:v3.5.4
+        ports:
+        - name: metrics
+          containerPort: 9798
+        resources:
+          requests:
+            cpu: 10m
+            memory: 64Mi
+          limits:
+            memory: 128Mi
+        readinessProbe:
+          tcpSocket:
+            port: metrics
+          initialDelaySeconds: 10
+          periodSeconds: 30

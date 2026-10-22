@@ -100,24 +100,6 @@ spec:
           allowUiUpdates: true
           options:
             path: /var/lib/grafana/dashboards/flux
-        - name: "loki"
-          orgId: 1
-          folder: "loki"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/loki
-        - name: "media"
-          orgId: 1
-          folder: "media"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/media
         - name: "networking"
           orgId: 1
           folder: "networking"
@@ -127,24 +109,6 @@ spec:
           allowUiUpdates: true
           options:
             path: /var/lib/grafana/dashboards/networking
-        - name: "power"
-          orgId: 1
-          folder: "power"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/power
-        - name: "storage"
-          orgId: 1
-          folder: "storage"
-          type: file
-          updateIntervalSeconds: 10
-          disableDeletion: false
-          allowUiUpdates: true
-          options:
-            path: /var/lib/grafana/dashboards/storage
         - name: "argo"
           orgId: 1
           folder: "argo"
@@ -193,13 +157,13 @@ spec:
 
       flux:
         cluster:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/v0.31.4/manifests/monitoring/monitoring-config/dashboards/cluster.json
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/cluster.json
           datasource: Prometheus
         control-plane:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/v0.31.4/manifests/monitoring/monitoring-config/dashboards/control-plane.json
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/control-plane.json
           datasource: Prometheus
         logs:
-          url: https://raw.githubusercontent.com/fluxcd/flux2/v0.31.4/manifests/monitoring/monitoring-config/dashboards/logs.json
+          url: https://raw.githubusercontent.com/fluxcd/flux2-monitoring-example/main/monitoring/configs/dashboards/logs.json
           datasource: Loki
 
       argo:
@@ -208,13 +172,282 @@ spec:
           datasource: Prometheus
 
       networking:
-        cert-manager:
-          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
+        blocky:
+          url: https://raw.githubusercontent.com/0xERR0R/blocky/main/docs/blocky-grafana.json
+          datasource: Prometheus
+        cilium:
+          url: https://raw.githubusercontent.com/cilium/cilium/v1.19/examples/kubernetes/addons/prometheus/files/grafana-dashboards/cilium-dashboard.json
+          datasource: Prometheus
+        cilium-operator:
+          url: https://raw.githubusercontent.com/cilium/cilium/v1.19/examples/kubernetes/addons/prometheus/files/grafana-dashboards/cilium-operator-dashboard.json
+          datasource: Prometheus
+        hubble:
+          url: https://raw.githubusercontent.com/cilium/cilium/v1.19/examples/kubernetes/addons/prometheus/files/grafana-dashboards/hubble-dashboard.json
+          datasource: Prometheus
+        envoy-proxy-global:
+          url: https://raw.githubusercontent.com/envoyproxy/gateway/main/charts/gateway-addons-helm/dashboards/envoy-proxy-global.json
+          datasource: Prometheus
+        envoy-clusters:
+          url: https://raw.githubusercontent.com/envoyproxy/gateway/main/charts/gateway-addons-helm/dashboards/envoy-clusters.json
           datasource: Prometheus
         # Ref: https://grafana.com/grafana/dashboards/13665
         speedtest:
-          gnetId: 13665
-          revision: 1
+          json: |
+            {
+              "uid": "-fs18ztMz",
+              "title": "Speedtest Dashboard",
+              "description": "Dashboard for Speedtest Exporter https://github.com/MiguelNdeCarvalho/speedtest-exporter",
+              "schemaVersion": 39,
+              "version": 7,
+              "editable": true,
+              "graphTooltip": 0,
+              "panels": [
+                {
+                  "id": 2,
+                  "title": "Download Speed",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "One bar per hourly test, with touching bars and visible outlines.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 12,
+                    "x": 0,
+                    "y": 0
+                  },
+                  "interval": "1h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "bps",
+                      "min": 0,
+                      "color": {
+                        "mode": "fixed",
+                        "fixedColor": "blue"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": -1,
+                        "barWidthFactor": 1,
+                        "lineWidth": 2,
+                        "fillOpacity": 35,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_download_bits_per_second[1h])",
+                      "interval": "1h",
+                      "legendFormat": "Download",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                },
+                {
+                  "id": 3,
+                  "title": "Upload Speed",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "One bar per hourly test, with touching bars and visible outlines.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 12,
+                    "x": 12,
+                    "y": 0
+                  },
+                  "interval": "1h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "bps",
+                      "min": 0,
+                      "color": {
+                        "mode": "fixed",
+                        "fixedColor": "purple"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": -1,
+                        "barWidthFactor": 1,
+                        "lineWidth": 2,
+                        "fillOpacity": 35,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": []
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "single",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_upload_bits_per_second[1h])",
+                      "interval": "1h",
+                      "legendFormat": "Upload",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                },
+                {
+                  "id": 4,
+                  "title": "Ping and Jitter",
+                  "type": "timeseries",
+                  "datasource": "Prometheus",
+                  "description": "One bar per hourly test, with touching bars and visible outlines.",
+                  "gridPos": {
+                    "h": 9,
+                    "w": 24,
+                    "x": 0,
+                    "y": 9
+                  },
+                  "interval": "1h",
+                  "fieldConfig": {
+                    "defaults": {
+                      "unit": "ms",
+                      "min": 0,
+                      "color": {
+                        "mode": "palette-classic"
+                      },
+                      "custom": {
+                        "drawStyle": "bars",
+                        "barAlignment": -1,
+                        "barWidthFactor": 1,
+                        "lineWidth": 2,
+                        "fillOpacity": 35,
+                        "gradientMode": "none",
+                        "showPoints": "never",
+                        "spanNulls": false,
+                        "stacking": {
+                          "mode": "none",
+                          "group": "A"
+                        }
+                      }
+                    },
+                    "overrides": [
+                      {
+                        "matcher": {
+                          "id": "byName",
+                          "options": "Ping (ms)"
+                        },
+                        "properties": [
+                          {
+                            "id": "color",
+                            "value": {
+                              "mode": "fixed",
+                              "fixedColor": "green"
+                            }
+                          }
+                        ]
+                      },
+                      {
+                        "matcher": {
+                          "id": "byName",
+                          "options": "Jitter (ms)"
+                        },
+                        "properties": [
+                          {
+                            "id": "color",
+                            "value": {
+                              "mode": "fixed",
+                              "fixedColor": "orange"
+                            }
+                          }
+                        ]
+                      }
+                    ]
+                  },
+                  "options": {
+                    "legend": {
+                      "displayMode": "table",
+                      "placement": "bottom",
+                      "calcs": [
+                        "min",
+                        "mean",
+                        "max"
+                      ]
+                    },
+                    "tooltip": {
+                      "mode": "multi",
+                      "sort": "none"
+                    }
+                  },
+                  "targets": [
+                    {
+                      "expr": "last_over_time(speedtest_ping_latency_milliseconds[1h])",
+                      "interval": "1h",
+                      "legendFormat": "Ping (ms)",
+                      "refId": "A",
+                      "range": true,
+                      "instant": false
+                    },
+                    {
+                      "expr": "last_over_time(speedtest_jitter_latency_milliseconds[1h])",
+                      "interval": "1h",
+                      "legendFormat": "Jitter (ms)",
+                      "refId": "B",
+                      "range": true,
+                      "instant": false
+                    }
+                  ]
+                }
+              ],
+              "time": {
+                "from": "now-2d",
+                "to": "now"
+              },
+              "timezone": "browser",
+              "refresh": "5m",
+              "tags": [
+                "networking"
+              ],
+              "templating": {
+                "list": []
+              }
+            }
+        cert-manager:
+          url: https://raw.githubusercontent.com/monitoring-mixins/website/master/assets/cert-manager/dashboards/cert-manager.json
           datasource: Prometheus
 
     serviceMonitor:
