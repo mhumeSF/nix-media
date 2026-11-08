@@ -7,6 +7,9 @@ metadata:
   labels:
     app.kubernetes.io/name: blocky
     app.kubernetes.io/instance: blocky
+    # Distinguishes this from the chart-managed `blocky` LoadBalancer Service, which
+    # carries the same name/instance labels; the ServiceMonitor selects on it.
+    app.kubernetes.io/component: metrics
 spec:
   type: ClusterIP
   selector:

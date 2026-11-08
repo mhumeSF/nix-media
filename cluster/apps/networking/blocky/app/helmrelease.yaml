@@ -8,63 +8,143 @@ spec:
   interval: 5m
   chart:
     spec:
-      # renovate: registryUrl=https://k8s-at-home.com/charts/
-      chart: blocky
-      version: 10.5.2
+      chart: app-template
+      version: 3.7.3
       sourceRef:
         kind: HelmRepository
-        name: k8s-at-home
+        name: bjw-s
         namespace: flux-system
       interval: 5m
   maxHistory: 3
   values:
+    controllers:
+      blocky:
+        replicas: 2
+        strategy: RollingUpdate
+        containers:
+          app:
+            image:
+              repository: ghcr.io/0xerr0r/blocky
+              tag: v0.35.0
+            env:
+              TZ: America/New_York
+              BLOCKY_CONFIG_FILE: /app/config.yml
+            # Image runs as UID 100; the binary carries cap_net_bind_service=+p,
+            # so 53 needs NET_BIND_SERVICE in the effective set.
+            securityContext:
+              capabilities:
+                add:
+                - NET_BIND_SERVICE
+            probes:
+              liveness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 53
+                  periodSeconds: 10
+                  failureThreshold: 3
+              readiness:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 53
+                  periodSeconds: 10
+                  failureThreshold: 3
+              startup:
+                enabled: true
+                custom: true
+                spec:
+                  tcpSocket:
+                    port: 53
+                  periodSeconds: 5
+                  failureThreshold: 30
+            resources:
+              requests:
+                cpu: 25m
+                memory: 256Mi
+              limits:
+                memory: 1Gi
     service:
-      main:
-        ports:
-          http:
-            port: 4000
-      dns-tcp:
-        enabled: false
-      dns-udp:
-        enabled: true
+      # identifier `app` + primary keeps the Service named exactly `blocky`, so the
+      # Cilium LB-IPAM allocation for ${BLOCKY} is carried over instead of re-issued.
+      app:
+        controller: blocky
+        primary: true
         type: LoadBalancer
         loadBalancerIP: "${BLOCKY}"
         externalTrafficPolicy: Local
         ports:
           dns-udp:
-            enabled: true
             port: 53
             protocol: UDP
             targetPort: 53
-    controller:
-      replicas: 2
-    podAnnotations:
-      checksum/config: "blocky-metrics-ha-2026-10-03"
-    metrics:
-      enabled: true
-      serviceMonitor:
-        interval: 30s
-        scrapeTimeout: 10s
-      prometheusRule:
+    serviceMonitor:
+      blocky:
+        # Points at the kustomize-managed `blocky-metrics` Service rather than a
+        # chart-generated one, which would collide with it on name.
+        selector:
+          matchLabels:
+            app.kubernetes.io/name: blocky
+            app.kubernetes.io/instance: blocky
+            app.kubernetes.io/component: metrics
+        endpoints:
+        - port: http
+          path: /metrics
+          interval: 30s
+          scrapeTimeout: 10s
+    configMaps:
+      config:
         enabled: true
-    config: |
-      prometheus:
-        enable: true
-      upstream:
-        default:
-          - 1.1.1.1
-          - 1.0.0.1
-      conditional:
-        mapping:
-          ${CLUSTER_DOMAIN}: k8s-gateway.networking.svc.cluster.local
-      blocking:
-        refreshPeriod: 4h
-        blackLists:
-          ads:
-          - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
-          - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi-onlydomains.txt
-        clientGroupsBlock:
-          default:
-            - ads
-      port: 53
-      httpPort: 4000
+        data:
+          # blocky >= 0.22 config schema: `upstream` -> `upstreams.groups`,
+          # `blocking.blackLists` -> `blocking.denylists`, `port`/`httpPort` -> `ports`,
+          # and list refresh moved under `blocking.loading`.
+          config.yml: |
+            ports:
+              dns: 53
+              http: 4000
+            upstreams:
+              groups:
+                default:
+                - 1.1.1.1
+                - 1.0.0.1
+            conditional:
+              mapping:
+                ${CLUSTER_DOMAIN}: k8s-gateway.networking.svc.cluster.local
+            blocking:
+              blockType: zeroIp
+              clientGroupsBlock:
+                default:
+                - ads
+              denylists:
+                ads:
+                - https://raw.githubusercontent.com/StevenBlack/hosts/master/hosts
+                - https://raw.githubusercontent.com/hagezi/dns-blocklists/main/wildcard/multi-onlydomains.txt
+              loading:
+                refreshPeriod: 4h
+                # `fast` serves DNS immediately and loads lists in the background, so a
+                # slow blocklist download can never hold up LAN DNS on startup.
+                strategy: fast
+                maxErrorsPerSource: 5
+                downloads:
+                  timeout: 60s
+                  attempts: 3
+                  cooldown: 10s
+            caching:
+              prefetching: true
+            prometheus:
+              enable: true
+              path: /metrics
+    persistence:
+      config:
+        enabled: true
+        type: configMap
+        name: blocky-config
+        advancedMounts:
+          blocky:
+            app:
+            - path: /app/config.yml
+              subPath: config.yml
+              readOnly: true
