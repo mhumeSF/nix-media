@@ -1,0 +1,35 @@
+---
+# app-template has no prometheusRule support, so the two alerts the k8s-at-home
+# chart used to generate are declared here. Named `blocky-rules` rather than
+# `blocky` so it does not collide with the Helm-owned PrometheusRule that the
+# chart migration removes.
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: blocky-rules
+  namespace: networking
+  labels:
+    app.kubernetes.io/name: blocky
+    app.kubernetes.io/instance: blocky
+spec:
+  groups:
+  - name: blocky
+    rules:
+    - alert: BlockyAbsent
+      annotations:
+        summary: Blocky is down.
+        description: Blocky has disappeared from Prometheus service discovery.
+      expr: |
+        absent(up{job=~".*blocky.*"} == 1)
+      for: 5m
+      labels:
+        severity: critical
+    - alert: BlockyDisabled
+      annotations:
+        summary: Blocky is disabled.
+        description: Blocky's ad blocking has been disabled for 15min. Please re-enable protection.
+      expr: |
+        blocky_blocking_enabled{job=~".*blocky.*"} == 0
+      for: 15m
+      labels:
+        severity: critical
