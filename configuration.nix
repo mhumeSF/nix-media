@@ -9,6 +9,7 @@
     ./disk-config.nix
     ./common/nixie.nix
     ./plex.nix
+    ./govee.nix
     ./ops/codex-worker.nix
   ];
 
