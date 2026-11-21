@@ -24,6 +24,13 @@ jobs:
     - uses: nixbuild/nix-quick-install-action@9f63be77f412a248c9d9a65a4c82cf066cdf8f0c # v35
     - name: Evaluate locked NixOS configuration
       run: nix eval --no-write-lock-file --raw .#nixosConfigurations.media.config.system.build.toplevel.drvPath
+    - name: Test Govee advertisement decoding
+      run: >-
+        nix shell --impure --expr
+        'let f = builtins.getFlake (toString ./.);
+        in f.nixosConfigurations.media.pkgs.python3.withPackages
+        (ps: [ ps.bleak ps.govee-ble ps.prometheus-client ])'
+        --command python -m unittest discover -s tests -v
     - name: Validate all Kubernetes targets
       run: |
         nix develop --no-write-lock-file .#ci --command bash -euo pipefail -c '
